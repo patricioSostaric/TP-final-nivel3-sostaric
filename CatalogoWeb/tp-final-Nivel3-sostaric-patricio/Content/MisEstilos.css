@@ -1,4 +1,9 @@
 ﻿body {
+    background-color:azure
+
+}
+h1{
+    font-family:'Global Serif';
 }
 .CentrarTitulo {
     text-align: center;

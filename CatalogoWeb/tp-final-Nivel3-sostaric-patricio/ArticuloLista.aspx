@@ -72,5 +72,9 @@
      </Columns>
  </asp:GridView>
 </div> 
+    <div class="boton">
+ <a  href="FormularioArticulo.aspx" class="btn btn-secondary"> Nuevo articulo</a>
+  
+</div>
 
 </asp:Content>
