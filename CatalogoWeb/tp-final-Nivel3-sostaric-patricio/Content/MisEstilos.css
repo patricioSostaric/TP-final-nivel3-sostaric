@@ -1,0 +1,21 @@
+﻿body {
+}
+.CentrarTitulo {
+    text-align: center;
+}
+
+.Margen {
+    padding-left: 20px;
+}
+
+.Mi-tabla {
+    margin: 10px auto;
+    float: left;
+    padding: 10px;
+}
+
+.boton {
+    margin-top: 0.5px;
+    padding-left: 20px;
+    clear: both;
+}

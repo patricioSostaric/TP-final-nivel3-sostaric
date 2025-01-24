@@ -1,0 +1,6 @@
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Dominio\bin\Debug\Dominio.dll
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Dominio\bin\Debug\Dominio.pdb
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Dominio\obj\Debug\Dominio.csproj.AssemblyReference.cache
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Dominio\obj\Debug\Dominio.csproj.CoreCompileInputs.cache
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Dominio\obj\Debug\Dominio.dll
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Dominio\obj\Debug\Dominio.pdb

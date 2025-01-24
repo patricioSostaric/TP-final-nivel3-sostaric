@@ -1,0 +1,6 @@
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Datos\bin\Debug\Datos.dll
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Datos\bin\Debug\Datos.pdb
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Datos\obj\Debug\Datos.csproj.AssemblyReference.cache
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Datos\obj\Debug\Datos.csproj.CoreCompileInputs.cache
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Datos\obj\Debug\Datos.dll
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Datos\obj\Debug\Datos.pdb
