@@ -63,3 +63,4 @@ C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patrici
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\Datos.pdb
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\Dominio.pdb
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\Negocio.pdb
+C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\roslyn\Tabla de contenido de OneNote.onetoc2

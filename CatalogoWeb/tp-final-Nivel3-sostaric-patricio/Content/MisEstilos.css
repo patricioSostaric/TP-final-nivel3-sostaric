@@ -1,9 +1,10 @@
 ﻿body {
-    background-color:azure
+    background-color:azure ;
 
 }
 h1{
     font-family:'Global Serif';
+    font-size:50px;
 }
 .CentrarTitulo {
     text-align: center;
