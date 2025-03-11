@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <h1 class="CentrarTitulo">formulario Articulo</h1>
+    <h1 >formulario Articulo</h1>
 
         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
 <div class="row">

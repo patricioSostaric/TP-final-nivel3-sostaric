@@ -9,11 +9,18 @@ using System.Web.UI.WebControls;
 
 namespace tp_final_Nivel3_sostaric_patricio
 {
-    public partial class ArticuloLista : System.Web.UI.Page
+    public partial class ArticuloLista1 : System.Web.UI.Page
     {
         public bool FiltroAvanzado { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
+
+
+             if (!Seguridad.esAdmin(Session["Usuario"]))
+            {
+             Session.Add("error", "Se requiere permisos de admin para acceder a esta pantalla");
+              Response.Redirect("Error.aspx");
+             }
             if (!IsPostBack)
             {
 
@@ -82,9 +89,10 @@ namespace tp_final_Nivel3_sostaric_patricio
             Response.Redirect("FormularioArticulo.aspx?id=" + id);
         }
 
-        protected void dgvArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        protected void dgvArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e  )
         {
             dgvArticulos.PageIndex = e.NewPageIndex;
+            dgvArticulos.DataSource=Session["listaArticulos"];
             dgvArticulos.DataBind();
         }
     }

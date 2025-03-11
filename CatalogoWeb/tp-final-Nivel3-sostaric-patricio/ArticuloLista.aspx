@@ -1,21 +1,23 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MiMasterpage.Master" AutoEventWireup="true" CodeBehind="ArticuloLista.aspx.cs" Inherits="tp_final_Nivel3_sostaric_patricio.ArticuloLista" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MiMasterpage.Master" AutoEventWireup="true" CodeBehind="ArticuloLista.aspx.cs" Inherits="tp_final_Nivel3_sostaric_patricio.ArticuloLista1" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-      <h1 class ="CentrarTitulo"> grilla de articulos</h1>
+      <h1 > grilla de articulos</h1>
 
-    <div class="row">
-    <div class="col-6">
-        <div class="mb-3">
-            <asp:Label Text="Buscar por nombre" CssClass="Margen" runat="server" />
-        
-            <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtFiltro_TextChanged" />
-        
-        </div>
-    </div>
-
-    <div class="col-6" style="display: flex; flex-direction: column; justify-content: flex-end;">
+<div class="row">
+<div class="col-6">
     <div class="mb-3">
+        <asp:Label Text="Buscar por nombre"  runat="server" />
+    
+        <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtFiltro_TextChanged" />
+    
+    </div>
+</div>
+        
+     <div class="col-6" style="display: flex; flex-direction: column; justify-content: flex-end;">
+    
+    <div class="mb-3">
+
         <asp:CheckBox runat="server" Text="Filtro Avanzado" CssClass="form-control" ID="chkFiltroAvanzado" AutoPostBack="true"  OnCheckedChanged="chkFiltroAvanzado_CheckedChanged" />
     </div>
 </div>
@@ -55,9 +57,8 @@
   </div>
   <%} %>
     </div>
-    <div class="Mi-tabla" >
-
-     <asp:GridView ID="dgvArticulos" CssClass="table table-striped table-hover table-m" AutoGenerateColumns="false" DataKeyNames="Id"
+    <div >
+             <asp:GridView ID="dgvArticulos" CssClass="table table-striped table-hover table-m" AutoGenerateColumns="false" DataKeyNames="Id"
      OnSelectedIndexChanged="dgvArticulos_SelectedIndexChanged"
      OnPageIndexChanging="dgvArticulos_PageIndexChanging"
      AllowPaging="true" PageSize="5" runat="server">
@@ -76,5 +77,5 @@
  <a  href="FormularioArticulo.aspx" class="btn btn-secondary"> Nuevo articulo</a>
   
 </div>
-
+    
 </asp:Content>

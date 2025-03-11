@@ -1,27 +1,18 @@
-﻿body {
-    background-color:azure ;
-
-}
-h1{
-    font-family:'Global Serif';
-    font-size:50px;
-}
-.CentrarTitulo {
+﻿
+h1 {
+    font-size: 3em;
+    
     text-align: center;
 }
-
-.Margen {
-    padding-left: 20px;
+h2 {
+    text-align:center;
 }
-
-.Mi-tabla {
-    margin: 10px auto;
-    float: left;
-    padding: 10px;
-}
-
 .boton {
     margin-top: 0.5px;
     padding-left: 20px;
     clear: both;
+}
+.validacion {
+    color: red;
+    font-size: 12px;
 }

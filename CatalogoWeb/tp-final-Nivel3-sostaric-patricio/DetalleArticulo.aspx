@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <h1  class ="CentrarTitulo" >Detalle del articulo seleccionado</h1>
+    <h1  >Detalle del articulo seleccionado</h1>
 <br />
 <div class="row">
     <div class="col-6">

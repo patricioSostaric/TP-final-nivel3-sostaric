@@ -123,13 +123,13 @@ namespace tp_final_Nivel3_sostaric_patricio
                 {
                     ArticuloNegocio negocio = new ArticuloNegocio();
                     negocio.eliminar(int.Parse(txtId.Text));
-                    Response.Redirect("ArticuloLista.aspx");
+                    Response.Redirect("ArticuloLista.aspx",false);
                 }
             }
             catch (Exception ex)
             {
                 Session.Add("error", ex.ToString());
-                Response.Redirect("Error.aspx");
+                Response.Redirect("Error.aspx",false);
             }
         }
     }
