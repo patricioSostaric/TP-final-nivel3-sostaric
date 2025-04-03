@@ -34,6 +34,7 @@ namespace Negocio
 
                 throw ex;
             }
+
         }
 
         public void insertarNuevoFavorito(ArticuloFavorito nuevo)
@@ -81,11 +82,12 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                
+               
                 datos.setearConsulta("DELETE FROM FAVORITOS WHERE IdArticulo = @idArticulo AND IdUser = @idUser");
                 datos.setearParametro("@idArticulo", idArticulo);
                 datos.setearParametro("@idUser", idUser);
                 datos.ejecutarAccion();
+                datos.cerrarConexion();
             }
             catch (Exception ex)
             {
@@ -93,50 +95,14 @@ namespace Negocio
             }
             finally
             {
-               
                 datos.cerrarConexion();
             }
-        }
-        public List<Articulo> listarArtById(List<int> idArticulos)
-        {
-            List<Articulo> lista = new List<Articulo>();
-            foreach (int id in idArticulos)
-            {
-                Articulo articulo = listarArticuloId(id);
-                lista.Add(articulo);
-            }
-            return lista;
+            
         }
 
-        public Articulo listarArticuloId(int id)
-        {
-            AccesoDatos datos = new AccesoDatos();
-            Articulo articulo = new Articulo();
-            try
-            {
-                datos.setearConsulta("SELECT * FROM ARTICULOS WHERE Id = @id");
-                datos.setearParametro("@id", id);
-                datos.ejecutarLectura();
-                while (datos.Lector.Read())
-                {
-                    articulo.Id = (int)datos.Lector["Id"];
-                    articulo.Nombre = (string)datos.Lector["Nombre"];
-                    articulo.Descripcion = (string)datos.Lector["Descripcion"];
-                    articulo.Precio = (decimal)datos.Lector["Precio"];
-                    articulo.ImagenUrl = (string)datos.Lector["UrlImagen"];
-                }
-                datos.cerrarConexion();
-                return articulo;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        
-        
 
-        
+
+
 
     }
 }

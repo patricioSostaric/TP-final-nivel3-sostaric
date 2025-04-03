@@ -14,6 +14,8 @@ namespace tp_final_Nivel3_sostaric_patricio
         public List<Articulo> ListaArticulo { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
+            
+
             ArticuloNegocio negocio = new ArticuloNegocio();
             ListaArticulo = negocio.listarConSP();
 
@@ -38,7 +40,7 @@ namespace tp_final_Nivel3_sostaric_patricio
             string valor = ((Button)sender).CommandArgument;
 
             Session.Add("error", "Disponible próximamente 😁");
-            Response.Redirect("Error.aspx");
+            Response.Redirect("Error.aspx",false);
         }
     }
 }
