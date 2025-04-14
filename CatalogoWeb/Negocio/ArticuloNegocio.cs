@@ -146,6 +146,10 @@ namespace Negocio
             {
                 throw ex;
             }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
 
         public void agregar(Articulo nuevo)
