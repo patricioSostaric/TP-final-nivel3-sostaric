@@ -42,5 +42,42 @@ namespace tp_final_Nivel3_sostaric_patricio
             Session.Add("error", "Disponible próximamente 😁");
             Response.Redirect("Error.aspx",false);
         }
+
+        protected void btnAgregarFavorito_Click(object sender, EventArgs e)
+        {
+            int idArticulo = int.Parse(((Button)sender).CommandArgument);
+            AgregarFavorito(idArticulo);
+        }
+        private void AgregarFavorito(int idArticulo)
+        {
+            try
+            {
+                Usuario user = (Usuario)Session["Usuario"];
+                ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
+                ArticuloFavorito nuevoFavorito = new ArticuloFavorito();
+                nuevoFavorito.IdUser = user.Id;
+                nuevoFavorito.IdArticulo = idArticulo;
+                negocio.insertarNuevoFavorito(nuevoFavorito);
+                List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"];
+                if (listaArticulos == null)
+                {
+                    listaArticulos = new List<Articulo>();
+                }
+                ArticuloNegocio artNegocio = new ArticuloNegocio();
+                Articulo articulo = artNegocio.listarArtById(new List<int> { idArticulo }).FirstOrDefault();
+                if (articulo != null)
+                {
+                    listaArticulos.Add(articulo);
+                }
+                Session["ListaFavoritos"] = listaArticulos;
+                Response.Redirect("Favoritos.aspx", false);
+            }
+            catch (Exception ex)
+            {
+                // Manejar la excepción, por ejemplo, mostrar un mensaje de error
+                Session.Add("error", "Error al agregar artículo a favoritos: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
+            }
+        }
     }
 }

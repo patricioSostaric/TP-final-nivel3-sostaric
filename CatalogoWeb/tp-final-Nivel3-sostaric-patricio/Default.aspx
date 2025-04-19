@@ -15,8 +15,10 @@
     </div>
     </div>
     </div>
-    
- <div class="row row-cols-1 row-cols-md-3 g-4">
+   
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+ 
          <asp:Repeater ID="repRepetidor" runat="server">
         <ItemTemplate>
             <div class="col">
@@ -26,14 +28,16 @@
                     <div class="card-body">
                         <h5 class="card-title"><%#Eval("Nombre") %></h5>
                         <p class="card-text"><%#Eval("Descripcion") %></p>
-                        <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle
+                        <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
                         <asp:Button Text="Comprar" CssClass="btn btn-secondary" ID="btnComprar" CommanArgument='<%#Eval("Id") %>' CommandName="ArticuloId" OnClick="btnComprar_Click" runat="server" />
-                        <a href="Favoritos.aspx?id=<%#Eval("Id") %>" > ♡ </a>                            
+                        <asp:Button ID="btnAgregarFavorito" runat="server" CommandArgument='<%# Eval("Id") %>' OnClick="btnAgregarFavorito_Click" Text="♡" CssClass="btn btn-link" Visible='<%# Session["Usuario"] != null %>' />
                     </div>
                 </div>
             </div>
         </ItemTemplate>
     </asp:Repeater>
+        </div>
+      
 
-</div>
+
 </asp:Content>

@@ -19,9 +19,17 @@ namespace tp_final_Nivel3_sostaric_patricio
 
             if (!IsPostBack)
             {
+                Usuario user = ObtenerUsuario();
+                if (Session["ListaFavoritos"] == null)
+                {
+                    ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
+                    List<int> idArticulosFavoritos = negocioart.listarFavUserId(user.Id);
+                    Session["ListaFavoritos"] = idArticulosFavoritos.Count > 0
+                        ? new ArticuloNegocio().listarArtById(idArticulosFavoritos)
+                        : new List<Articulo>();
+                }
                 Cargar();
             }
-
 
 
 
@@ -31,91 +39,40 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void btnEliminarFavorito_Click(object sender, EventArgs e)
         {
-            // Usuario user = (Usuario)Session["Usuario"];
-            Usuario user = ObtenerUsuario();
-            ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
+
 
             // Obtener el IdArticuloFav del botón que se hizo click
-           // Usuario userGuardado = user;
             int idArticulo = int.Parse(((Button)sender).CommandArgument);
-
-            // Obtener el IdUser del usuario logueado
-
-            int idUser = user.Id;
-
-            // Eliminar el registro de la tabla FAVORITOS, solo si pertenece al usuario logueado
-            negocio.eliminarFavorito(idArticulo, idUser);
-
-
-
+            EliminarFavorito(idArticulo);
+            //actualizar la pagina:
             Cargar();
-            //actualizar la pagina: 
-            Page_Load(sender, e);
-
-
-
 
         }
         private void Cargar()
         {
-            // Usuario user = (Usuario)Session["Usuario"];
-            Usuario user = ObtenerUsuario();
 
-            string id = Request.QueryString["Id"];
-
-
-            if (!string.IsNullOrEmpty(id) && int.TryParse(id, out int idArticulo))
-            {
-                ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
-                ArticuloFavorito nuevo = new ArticuloFavorito();
-
-                nuevo.IdUser = user.Id;
-                nuevo.IdArticulo = int.Parse(id);
-
-                negocio.insertarNuevoFavorito(nuevo);
-            }
-            ListaArticulo = new List<Articulo>();
-
-            if (user != null)
-            {
-                ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
-                List<int> idArticulosFavoritos = negocioart.listarFavUserId(user.Id);
-                if (idArticulosFavoritos.Count > 0)
-                {
-                    ArticuloNegocio art = new ArticuloNegocio();
-                    ListaArticulo = art.listarArtById(idArticulosFavoritos);
-                    RepetidorFavorito.DataSource = ListaArticulo;
-                    RepetidorFavorito.DataBind();
-                }
-                
-                
-            }
-            else
-            {
-                Session.Add("error", "No se han podido cargar los articulos favoritos 😕");
-                Response.Redirect("Error.aspx", false);
-            }
-              if (ListaArticulo.Count == 0)
-                {
-                    RepetidorFavorito.Visible=false;
-                }
-                else
-                {
-                    RepetidorFavorito.Visible = true;
-                }
-
-
+            List<Articulo> lista = (List<Articulo>)Session["ListaFavoritos"] ?? new List<Articulo>();
+            RepetidorFavorito.DataSource = lista;
+            RepetidorFavorito.DataBind();
+            RepetidorFavorito.Visible = lista.Count > 0;
         }
+
+
         public Usuario ObtenerUsuario()
         {
-            if (Session["Usuario"] != null)
-            {
-                return (Usuario)Session["Usuario"];
-            }
-            else
-            {
-                return null;
-            }
+            return (Usuario)Session["Usuario"] ?? null;
+        }
+        private void EliminarFavorito(int idArticulo)
+        {
+
+            Usuario user = ObtenerUsuario();
+            ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
+            negocio.eliminarFavorito(idArticulo, user.Id);
+            List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"] ?? new List<Articulo>();
+            listaArticulos.RemoveAll(a => a.Id == idArticulo);
+            Session["ListaFavoritos"] = listaArticulos;
+            Cargar();
+
         }
     }
 }
