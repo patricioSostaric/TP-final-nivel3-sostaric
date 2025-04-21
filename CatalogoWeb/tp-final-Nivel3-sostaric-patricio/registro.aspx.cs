@@ -18,26 +18,37 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void btnRegistrarse_Click(object sender, EventArgs e)
         {
-            try
+            if (Page.IsValid)
             {
-                Usuario user = new Usuario();
-                UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-                EmailService emailService = new EmailService();
 
-                user.Email = txtEmail.Text;
-                user.Pass = txtPassword.Text;
-                user.Id = usuarioNegocio.insertarNuevo(user);
-                Session.Add("usuarios", user);
 
-                emailService.armarCorreo(user.Email, "Bienvenido usuario", "Hola te damos la bienvenida a la aplicación...");
-                emailService.enviarEmail();
-                Response.Redirect("Default.aspx", false);
+                try
+                {
+                    Usuario user = new Usuario();
+                    UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+                    EmailService emailService = new EmailService();
 
+                    user.Email = txtEmail.Text;
+                    user.Pass = txtPassword.Text;
+                    user.Id = usuarioNegocio.insertarNuevo(user);
+                    Session.Add("usuarios", user);
+
+                    emailService.armarCorreo(user.Email, "Bienvenido usuario", "Hola te damos la bienvenida a la aplicación...");
+                    emailService.enviarEmail();
+                    Response.Redirect("Default.aspx", false);
+
+                }
+                catch (Exception ex)
+                {
+                    Session.Add("error", ex.ToString());
+                }
             }
-            catch (Exception ex)
-            {
-                Session.Add("error", ex.ToString());
-            }
+        }
+
+        protected void cvEmail_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            EmailService emailService = new EmailService();
+            args.IsValid = !emailService.EmailYaRegistrado(txtEmail.Text);
         }
     }
 }

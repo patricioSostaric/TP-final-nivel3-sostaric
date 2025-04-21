@@ -18,7 +18,7 @@ namespace tp_final_Nivel3_sostaric_patricio
 
                 if (!IsPostBack)
                 {
-                    if (Seguridad.sesionActiva(Session["trainee"]))
+                    if (Seguridad.sesionActiva(Session["Usuario"]))
                     {
                         Usuario user = (Usuario)Session["Usuario"];
                         txtEmail.Text = user.Email;
@@ -77,6 +77,8 @@ namespace tp_final_Nivel3_sostaric_patricio
                 Response.Redirect("Error.aspx");
             }
         }
+
+       
     }
     
 }

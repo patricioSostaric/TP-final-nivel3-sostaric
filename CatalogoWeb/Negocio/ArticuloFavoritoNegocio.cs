@@ -43,42 +43,24 @@ namespace Negocio
 
         public void insertarNuevoFavorito(ArticuloFavorito nuevo)
         {
-            AccesoDatos datos = new AccesoDatos();
-            try
+            if (!ExisteFavorito(nuevo.IdArticulo, nuevo.IdUser))
             {
-                // Comprobar si el usuario ya tiene el artículo en su lista de favoritos
-                datos.setearConsulta("SELECT COUNT(*) FROM FAVORITOS WHERE IdUser = @idUser AND IdArticulo = @idArticulo");
-                datos.setearParametro("@idUser", nuevo.IdUser);
-                datos.setearParametro("@idArticulo", nuevo.IdArticulo);
-                datos.ejecutarLectura();
-
-                // Si la consulta devuelve algún resultado, el artículo ya está en la lista de favoritos del usuario y no se debe insertar un nuevo registro
-                if (datos.Lector.Read())
+                AccesoDatos datos = new AccesoDatos();
+                try
                 {
-                    int cantidad = Convert.ToInt32(datos.Lector[0]);
-                    if (cantidad > 0)
-                    {
-                        datos.cerrarConexion();
-                        return;
-                    }
+                    datos.setearConsulta("INSERT INTO FAVORITOS (IdUser, IdArticulo)VALUES(@idUser, @idArticulo)");
+                    datos.setearParametro("@idUser", nuevo.IdUser);
+                    datos.setearParametro("@idArticulo", nuevo.IdArticulo);
+                    datos.ejecutarAccion();
                 }
-
-                datos.cerrarConexion();
-                datos = new AccesoDatos();
-                // Insertar el nuevo registro en la tabla "FAVORITOS"
-                datos.setearConsulta("INSERT INTO FAVORITOS (IdUser, IdArticulo)VALUES(@idUser, @idArticulo)");
-                datos.setearParametro("@idUser", nuevo.IdUser);
-                datos.setearParametro("@idArticulo", nuevo.IdArticulo);
-                datos.ejecutarAccion();
-                datos.cerrarConexion();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                datos.cerrarConexion();
+                catch (Exception)
+                {
+                    throw;
+                }
+                finally
+                {
+                    datos.cerrarConexion();
+                }
             }
         }
         public void eliminarFavorito(int idArticulo, int idUser)
@@ -104,7 +86,31 @@ namespace Negocio
             
         }
 
-
+        public bool ExisteFavorito(int idArticulo, int idUser)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT COUNT(*) FROM FAVORITOS WHERE IdUser = @idUser AND IdArticulo = @idArticulo");
+                datos.setearParametro("@idUser", idUser);
+                datos.setearParametro("@idArticulo", idArticulo);
+                datos.ejecutarLectura();
+                if (datos.Lector.Read())
+                {
+                    int cantidad = Convert.ToInt32(datos.Lector[0]);
+                    return cantidad > 0;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
 
 

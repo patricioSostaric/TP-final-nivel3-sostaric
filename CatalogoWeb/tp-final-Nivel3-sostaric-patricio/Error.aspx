@@ -8,7 +8,7 @@
         <img src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRtzzmlsYuIdB5XTVAnM8iyP9HJUwDXwxHwXWcVxxAH803XPRVg" class="card-img-top" alt="Error">
         <div class="card-body">
             <h5 class="card-title">Hola, hubo un error!</h5>
-            <asp:Label Text="" ID="lblError" runat="server" CssClass="card-text" />
+            <asp:Label Text="" ID="lblError"  runat="server" CssClass="card-text" />
             <div style="padding: 20px;">
                 <a href="Default.aspx" class="btn btn-secondary">Home</a>
             </div>

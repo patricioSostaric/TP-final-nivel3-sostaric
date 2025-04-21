@@ -11,7 +11,19 @@ namespace tp_final_Nivel3_sostaric_patricio
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            lblError.Text = Session["error"].ToString();
+            
+            if (Session["error"] != null)
+            {
+                lblError.Text = Session["error"].ToString();
+                Session.Remove("error");
+            }
+            else if (Session["duplicado"] != null)
+            {
+                lblError.Text = Session["duplicado"].ToString();
+                Session.Remove("duplicado");
+            }
+
+
         }
     }
 }

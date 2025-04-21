@@ -45,32 +45,42 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void btnAgregarFavorito_Click(object sender, EventArgs e)
         {
+            
             int idArticulo = int.Parse(((Button)sender).CommandArgument);
-            AgregarFavorito(idArticulo);
+            AgregarFavorito(idArticulo, (Button)sender);
         }
-        private void AgregarFavorito(int idArticulo)
+       
+        private void AgregarFavorito(int idArticulo, Button btnAgregarFavorito)
         {
             try
             {
                 Usuario user = (Usuario)Session["Usuario"];
                 ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
-                ArticuloFavorito nuevoFavorito = new ArticuloFavorito();
-                nuevoFavorito.IdUser = user.Id;
-                nuevoFavorito.IdArticulo = idArticulo;
-                negocio.insertarNuevoFavorito(nuevoFavorito);
-                List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"];
-                if (listaArticulos == null)
+                if (negocio.ExisteFavorito(idArticulo, user.Id))
                 {
-                    listaArticulos = new List<Articulo>();
+                    Session.Add("duplicado", "el articulo ya estaba agregado a favoritos");
+                    Response.Redirect("Error.aspx", false);
                 }
-                ArticuloNegocio artNegocio = new ArticuloNegocio();
-                Articulo articulo = artNegocio.listarArtById(new List<int> { idArticulo }).FirstOrDefault();
-                if (articulo != null)
+                else
                 {
-                    listaArticulos.Add(articulo);
+                    ArticuloFavorito nuevoFavorito = new ArticuloFavorito();
+                    nuevoFavorito.IdUser = user.Id;
+                    nuevoFavorito.IdArticulo = idArticulo;
+                    negocio.insertarNuevoFavorito(nuevoFavorito);
+                    List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"];
+                    if (listaArticulos == null)
+                    {
+                        listaArticulos = new List<Articulo>();
+                    }
+                    ArticuloNegocio artNegocio = new ArticuloNegocio();
+                    Articulo articulo = artNegocio.listarArtById(new List<int> { idArticulo }).FirstOrDefault();
+                    if (articulo != null)
+                    {
+                        listaArticulos.Add(articulo);
+                    }
+                    Session["ListaFavoritos"] = listaArticulos;
+                    Response.Redirect("Favoritos.aspx", false);
                 }
-                Session["ListaFavoritos"] = listaArticulos;
-                Response.Redirect("Favoritos.aspx", false);
             }
             catch (Exception ex)
             {
@@ -79,5 +89,7 @@ namespace tp_final_Nivel3_sostaric_patricio
                 Response.Redirect("Error.aspx", false);
             }
         }
+
+
     }
 }

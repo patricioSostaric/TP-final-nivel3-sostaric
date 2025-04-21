@@ -5,6 +5,7 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Datos;
 
 namespace Negocio
 {
@@ -44,6 +45,26 @@ namespace Negocio
                 throw ex;
             }
         }
+        public bool EmailYaRegistrado(string email)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT COUNT(*) FROM USERS WHERE LOWER(email) = @email");
+                datos.setearParametro("@email", email.ToLower());
+                int count = (int)datos.ejecutarAccionScalar();
+                return count > 0;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
     }
 }
 
