@@ -154,6 +154,9 @@ namespace Negocio
 
         public void agregar(Articulo nuevo)
         {
+            if (ExisteArticulo(nuevo.Codigo, nuevo.Nombre))
+                throw new Exception("El artículo ya existe en el catálogo.");
+
             AccesoDatos datos = new AccesoDatos();
 
             try
@@ -178,7 +181,10 @@ namespace Negocio
         }
 
         public void agregarConSP(Articulo nuevo)
-        {
+        { 
+            if (ExisteArticulo(nuevo.Codigo, nuevo.Nombre))
+                throw new Exception("El artículo ya existe en el catálogo.");
+
             AccesoDatos datos = new AccesoDatos();
 
             try
@@ -349,6 +355,28 @@ namespace Negocio
             {
 
                 throw ex;
+            }
+        }
+        public bool ExisteArticulo(string codigo, string nombre)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT COUNT(*) FROM ARTICULOS WHERE Codigo = @codigo OR Nombre = @nombre");
+                datos.setearParametro("@codigo", codigo);
+                datos.setearParametro("@nombre", nombre);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    int count = (int)datos.Lector[0];
+                    return count > 0;
+                }
+                return false;
+            }
+            finally
+            {
+                datos.cerrarConexion();
             }
         }
     }

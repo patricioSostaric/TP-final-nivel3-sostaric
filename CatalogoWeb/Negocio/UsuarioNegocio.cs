@@ -45,6 +45,15 @@ namespace Negocio
         }
         public int insertarNuevo(Usuario nuevo)
         {
+   
+            nuevo.Email = NormalizarEmail(nuevo.Email);
+
+            // Validamos duplicados
+            if (ExisteUsuario(nuevo.Email))
+                throw new Exception("Ya existe un usuario con ese email.");
+
+
+
             AccesoDatos datos = new AccesoDatos();
             try
             {
@@ -89,7 +98,44 @@ namespace Negocio
                 }
             }
 
+        private static string NormalizarEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return email;
+            return email.Trim().ToLowerInvariant();
+            // Trim() quita espacios al inicio y al final
+            // ToLowerInvariant() convierte todo a minúsculas
+        }
+
+        public bool ExisteUsuario(string email)
+        {
+            string normalizado = NormalizarEmail(email);
+
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT COUNT(*) FROM USERS WHERE LOWER(email) = @email");
+                datos.setearParametro("@email", normalizado);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    int count = Convert.ToInt32(datos.Lector[0]);
+                    return count > 0;
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
        
+        
 
     }
    

@@ -9,3 +9,14 @@ C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Negocio\obj\Debug\Negocio.csproj
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Negocio\obj\Debug\Negocio.csproj.Up2Date
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Negocio\obj\Debug\Negocio.dll
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\Negocio\obj\Debug\Negocio.pdb
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\bin\Debug\Negocio.dll
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\bin\Debug\Negocio.pdb
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\bin\Debug\Datos.dll
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\bin\Debug\Dominio.dll
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\bin\Debug\Datos.pdb
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\bin\Debug\Dominio.pdb
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\obj\Debug\Negocio.csproj.AssemblyReference.cache
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\obj\Debug\Negocio.csproj.CoreCompileInputs.cache
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\obj\Debug\Negocio.csproj.Up2Date
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\obj\Debug\Negocio.dll
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\Negocio\obj\Debug\Negocio.pdb
