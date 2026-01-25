@@ -63,8 +63,14 @@
         <asp:GridView ID="dgvArticulos" CssClass="table table-striped table-hover table-m" AutoGenerateColumns="false" DataKeyNames="Id"
             OnSelectedIndexChanged="dgvArticulos_SelectedIndexChanged"
             OnPageIndexChanging="dgvArticulos_PageIndexChanging"
-            EmptyDataText="No se encontraron artículos con ese criterio .."
             AllowPaging="true" PageSize="5" runat="server">
+            <EmptyDataTemplate>
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <span class="me-2">⚠️</span>
+                <span>No se encontraron artículos con ese criterio.</span>
+            </div>
+        </EmptyDataTemplate>
+
 
             <Columns>
                 <asp:BoundField HeaderText="Código" DataField="Codigo" />
