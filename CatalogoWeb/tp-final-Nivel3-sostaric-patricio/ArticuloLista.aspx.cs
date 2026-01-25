@@ -28,6 +28,10 @@ namespace tp_final_Nivel3_sostaric_patricio
                 Session.Add("listaArticulos", negocio.listarConSP());
                 dgvArticulos.DataSource = Session["listaArticulos"];
                 dgvArticulos.DataBind();
+
+
+                CargarCriterios();
+
             }
 
         }
@@ -44,23 +48,24 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             FiltroAvanzado = chkFiltroAvanzado.Checked;
             txtFiltro.Enabled = !FiltroAvanzado;
+
+            if (!FiltroAvanzado)
+            {
+                
+                dgvArticulos.DataSource = Session["listaArticulos"];
+                dgvArticulos.DataBind();
+            }
+
+
         }
 
         protected void ddlCampo_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ddlCriterio.Items.Clear();
-            if (ddlCampo.SelectedItem.ToString() == "Precio")
-            {
-                ddlCriterio.Items.Add("Igual a");
-                ddlCriterio.Items.Add("Mayor a");
-                ddlCriterio.Items.Add("Menor a");
-            }
-            else
-            {
-                ddlCriterio.Items.Add("Contiene");
-                ddlCriterio.Items.Add("Comienza con");
-                ddlCriterio.Items.Add("Termina con");
-            }
+            CargarCriterios();
+
+            // limpia el filtro para evitar valores inválidos
+            txtFiltroAvanzado.Text = string.Empty;
+
         }
 
         protected void btnBuscar_Click(object sender, EventArgs e)
@@ -68,19 +73,22 @@ namespace tp_final_Nivel3_sostaric_patricio
             try
             {
                 ArticuloNegocio negocio = new ArticuloNegocio();
-                dgvArticulos.DataSource = negocio.filtrar(
-                    ddlCampo.SelectedItem.ToString(),
-                    ddlCriterio.SelectedItem.ToString(),
-                    txtFiltroAvanzado.Text.ToString());
+
+                
+                string campo = ddlCampo.SelectedValue;      
+                string criterio = ddlCriterio.SelectedValue; 
+                string filtro = txtFiltroAvanzado.Text;     
+
+                dgvArticulos.DataSource = negocio.filtrar(campo, criterio, filtro);
                 dgvArticulos.DataBind();
-
-
             }
             catch (Exception ex)
             {
                 Session.Add("error", ex);
                 throw;
             }
+
+
         }
 
         protected void dgvArticulos_SelectedIndexChanged(object sender, EventArgs e)
@@ -89,11 +97,47 @@ namespace tp_final_Nivel3_sostaric_patricio
             Response.Redirect("FormularioArticulo.aspx?id=" + id);
         }
 
-        protected void dgvArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e  )
+        protected void dgvArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             dgvArticulos.PageIndex = e.NewPageIndex;
-            dgvArticulos.DataSource=Session["listaArticulos"];
-            dgvArticulos.DataBind();
+            if (Session["listaArticulos"] != null)
+            {
+
+                dgvArticulos.DataSource = Session["listaArticulos"];
+                dgvArticulos.DataBind();
+            }
+        }
+
+        private void CargarCriterios()
+        {
+            ddlCriterio.Items.Clear();
+            //string campoSeleccionado = ddlCampo.SelectedItem?.Text;
+            string campoSeleccionado = ddlCampo.SelectedValue;
+
+
+
+            switch (campoSeleccionado)
+            {
+                case "Codigo":
+                    ddlCriterio.Items.Add("Contiene");
+                    ddlCriterio.Items.Add("Comienza con");
+                    ddlCriterio.Items.Add("Termina con");
+                    break;
+
+                case "Precio":
+                    ddlCriterio.Items.Add("Igual a");
+                    ddlCriterio.Items.Add("Mayor a");
+                    ddlCriterio.Items.Add("Menor a");
+                    break;
+
+                default:
+                    
+                    ddlCriterio.Items.Add("Contiene");
+                    break;
+            }
+
+            
+            ddlCriterio.SelectedIndex = 0;
         }
     }
 }

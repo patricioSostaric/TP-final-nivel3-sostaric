@@ -16,7 +16,9 @@
             </div>
         </div>
     </div>
-
+    <div class="mb-3">
+        <asp:Label ID="lblMensaje" runat="server" CssClass="text-danger" Visible="false"></asp:Label>
+    </div>
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
 
@@ -32,10 +34,10 @@
                             <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
                             <asp:Button Text="Comprar" CssClass="btn btn-secondary" ID="btnComprar" CommanArgument='<%#Eval("Id") %>' CommandName="ArticuloId" OnClick="btnComprar_Click" runat="server" />
                             <asp:Button ID="btnAgregarFavorito" runat="server" CommandArgument='<%# Eval("Id") %>' OnClick="btnAgregarFavorito_Click" Text="♡" CssClass="btn btn-link" Visible='<%# Session["Usuario"] != null %>' />
-                           
-                           </div> 
+
                         </div>
                     </div>
+                </div>
             </ItemTemplate>
         </asp:Repeater>
     </div>

@@ -4,34 +4,33 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Negocio
 {
     public class ArticuloNegocio
+
     {
         public List<Articulo> listar(string id = "")
         {
             List<Articulo> lista = new List<Articulo>();
-            SqlConnection conexion = new SqlConnection();
-            SqlCommand comando = new SqlCommand();
-            SqlDataReader lector;
-
-            try
+            using (SqlConnection conexion = new SqlConnection(ConfigurationManager.AppSettings["cadenaConexion"]))
+            using (SqlCommand comando = new SqlCommand())
             {
-                conexion.ConnectionString = ConfigurationManager.AppSettings["cadenaConexion"];
-                //conexion.ConnectionString = "server=.\\SQLEXPRESS; database=CATALOGO_WEB_DB; integrated security=true";
                 comando.CommandType = System.Data.CommandType.Text;
-                comando.CommandText = "Select A.Id, Codigo, Nombre, A.Descripcion, A.IdMarca, M.Descripcion TipoMarca, A.IdCategoria, C.Descripcion TipoCategoria, ImagenUrl, A.Precio From ARTICULOS A, CATEGORIAS C, MARCAS M where C.Id = A.IdCategoria AND A.IdCategoria = M.Id ";
-                if (id != "")
-                    comando.CommandText += " and A.Id = " + id;
-                comando.Connection = conexion;
+                comando.CommandText = "SELECT A.Id, Codigo, Nombre, A.Descripcion, A.IdMarca, M.Descripcion TipoMarca, " +
+                                      "A.IdCategoria, C.Descripcion TipoCategoria, ImagenUrl, A.Precio " +
+                                      "FROM ARTICULOS A, CATEGORIAS C, MARCAS M " +
+                                      "WHERE C.Id = A.IdCategoria AND A.IdCategoria = M.Id";
 
+                if (!string.IsNullOrEmpty(id))
+                {
+                    comando.CommandText += " AND A.Id = @id";
+                    comando.Parameters.AddWithValue("@id", int.Parse(id));
+                }
+
+                comando.Connection = conexion;
                 conexion.Open();
-                lector = comando.ExecuteReader();
+                SqlDataReader lector = comando.ExecuteReader();
 
                 while (lector.Read())
                 {
@@ -53,15 +52,8 @@ namespace Negocio
 
                     lista.Add(aux);
                 }
-
-                conexion.Close();
-                return lista;
             }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            return lista;
         }
 
         public List<Articulo> listarConSP()
@@ -70,9 +62,11 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                string consulta = "Select A.Id, Codigo, Nombre, A.Descripcion, M.Descripcion TipoMarca, C.Descripcion TipoCategoria, ImagenUrl, A.Precio, A.IdMarca, A.IdCategoria From ARTICULOS A, CATEGORIAS C, MARCAS M where C.Id = A.IdCategoria AND A.IdCategoria = M.Id";
-                datos.setearConsulta(consulta);
-                //datos.setearProcedimiento("storedListar");
+                datos.setearConsulta("SELECT A.Id, Codigo, Nombre, A.Descripcion, M.Descripcion TipoMarca, " +
+                                     "C.Descripcion TipoCategoria, ImagenUrl, A.Precio, A.IdMarca, A.IdCategoria " +
+                                     "FROM ARTICULOS A, CATEGORIAS C, MARCAS M " +
+                                     "WHERE C.Id = A.IdCategoria AND A.IdCategoria = M.Id");
+                
 
                 datos.ejecutarLectura();
                 while (datos.Lector.Read())
@@ -94,29 +88,42 @@ namespace Negocio
                     aux.Precio = (decimal)datos.Lector["Precio"];
 
                     lista.Add(aux);
-
                 }
 
                 return lista;
             }
-            catch (Exception ex)
+            finally
             {
-
-                throw ex;
+                datos.cerrarConexion();
             }
         }
-
         public List<Articulo> listarArtById(List<int> listaArtId)
         {
             List<Articulo> lista = new List<Articulo>();
             AccesoDatos datos = new AccesoDatos();
             try
             {
+                // Armamos los placeholders de parámetros dinámicamente
+                var parametros = new List<string>();
+                for (int i = 0; i < listaArtId.Count; i++)
+                {
+                    string paramName = "@id" + i;
+                    parametros.Add(paramName);
+                }
+
                 string consulta = "SELECT A.Id, Codigo, Nombre, A.Descripcion, M.Descripcion TipoMarca, " +
-                    "C.Descripcion TipoCategoria, ImagenUrl, A.Precio, A.IdMarca, A.IdCategoria " +
-                    "FROM ARTICULOS A, CATEGORIAS C, MARCAS M " +
-                    "WHERE C.Id = A.IdCategoria AND A.IdCategoria = M.Id AND A.Id IN (" + string.Join(",", listaArtId) + ")";
+                                  "C.Descripcion TipoCategoria, ImagenUrl, A.Precio, A.IdMarca, A.IdCategoria " +
+                                  "FROM ARTICULOS A, CATEGORIAS C, MARCAS M " +
+                                  "WHERE C.Id = A.IdCategoria AND A.IdCategoria = M.Id " +
+                                  "AND A.Id IN (" + string.Join(",", parametros) + ")";
+
                 datos.setearConsulta(consulta);
+
+                // Asignamos cada parámetro con su valor
+                for (int i = 0; i < listaArtId.Count; i++)
+                {
+                    datos.setearParametro(parametros[i], listaArtId[i]);
+                }
 
                 datos.ejecutarLectura();
                 while (datos.Lector.Read())
@@ -151,28 +158,25 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
-
         public void agregar(Articulo nuevo)
         {
             if (ExisteArticulo(nuevo.Codigo, nuevo.Nombre))
                 throw new Exception("El artículo ya existe en el catálogo.");
 
             AccesoDatos datos = new AccesoDatos();
-
             try
             {
-
-                datos.setearConsulta("insert into ARTICULOS (Codigo, Nombre, Descripcion, IdMarca, IdCategoria, ImagenUrl, Precio)values( '" + nuevo.Codigo + "' ,'" + nuevo.Nombre + "','" + nuevo.Descripcion + "', @idMarca, @idCategoria, @imagenUrl, @precio)");
+                datos.setearConsulta("INSERT INTO ARTICULOS (Codigo, Nombre, Descripcion, IdMarca, IdCategoria, ImagenUrl, Precio) " +
+                                     "VALUES (@codigo, @nombre, @desc, @idMarca, @idCategoria, @imagenUrl, @precio)");
+                datos.setearParametro("@codigo", nuevo.Codigo);
+                datos.setearParametro("@nombre", nuevo.Nombre);
+                datos.setearParametro("@desc", nuevo.Descripcion);
                 datos.setearParametro("@idMarca", nuevo.TipoMarca.Id);
                 datos.setearParametro("@idCategoria", nuevo.TipoCategoria.Id);
                 datos.setearParametro("@imagenUrl", nuevo.ImagenUrl);
                 datos.setearParametro("@precio", nuevo.Precio);
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
 
-                throw ex;
+                datos.ejecutarAccion();
             }
             finally
             {
@@ -181,12 +185,11 @@ namespace Negocio
         }
 
         public void agregarConSP(Articulo nuevo)
-        { 
+        {
             if (ExisteArticulo(nuevo.Codigo, nuevo.Nombre))
                 throw new Exception("El artículo ya existe en el catálogo.");
 
             AccesoDatos datos = new AccesoDatos();
-
             try
             {
                 datos.setearProcedimiento("storedAltaArticulo");
@@ -197,12 +200,8 @@ namespace Negocio
                 datos.setearParametro("@idCategoria", nuevo.TipoCategoria.Id);
                 datos.setearParametro("@img", nuevo.ImagenUrl);
                 datos.setearParametro("@precio", nuevo.Precio);
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
 
-                throw ex;
+                datos.ejecutarAccion();
             }
             finally
             {
@@ -215,7 +214,8 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.setearConsulta("update ARTICULOS set Codigo = @codigo, Nombre = @nombre, Descripcion = @desc, IdMarca = @idMarca, IdCategoria = @idCategoria, ImagenUrl = @img, Precio = @precio where Id = @id");
+                datos.setearConsulta("UPDATE ARTICULOS SET Codigo=@codigo, Nombre=@nombre, Descripcion=@desc, " +
+                                     "IdMarca=@idMarca, IdCategoria=@idCategoria, ImagenUrl=@img, Precio=@precio WHERE Id=@id");
                 datos.setearParametro("@codigo", art.Codigo);
                 datos.setearParametro("@nombre", art.Nombre);
                 datos.setearParametro("@desc", art.Descripcion);
@@ -226,10 +226,6 @@ namespace Negocio
                 datos.setearParametro("@id", art.Id);
 
                 datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
@@ -254,10 +250,6 @@ namespace Negocio
 
                 datos.ejecutarAccion();
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
             finally
             {
                 datos.cerrarConexion();
@@ -266,21 +258,18 @@ namespace Negocio
 
         public void eliminar(int id)
         {
+            AccesoDatos datos = new AccesoDatos();
             try
             {
-                AccesoDatos datos = new AccesoDatos();
-                datos.setearConsulta("delete from ARTICULOS where Id = @id");
-                datos.setearParametro("id", id);
+                datos.setearConsulta("DELETE FROM ARTICULOS WHERE Id=@id");
+                datos.setearParametro("@id", id);
                 datos.ejecutarAccion();
             }
-            catch (Exception ex)
+            finally
             {
-
-                throw ex;
+                datos.cerrarConexion();
             }
         }
-
-
 
         public List<Articulo> filtrar(string campo, string criterio, string filtro)
         {
@@ -288,45 +277,49 @@ namespace Negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                string consulta = "Select A.Id, Codigo, Nombre, A.Descripcion, M.Descripcion TipoMarca, C.Descripcion TipoCategoria, ImagenUrl, A.Precio, A.IdMarca, A.IdCategoria From ARTICULOS A, CATEGORIAS C, MARCAS M where C.Id = A.IdCategoria AND A.IdCategoria = M.Id AND ";
+                string consulta = "SELECT A.Id, Codigo, Nombre, A.Descripcion, M.Descripcion TipoMarca, " +
+                                  "C.Descripcion TipoCategoria, ImagenUrl, A.Precio, A.IdMarca, A.IdCategoria " +
+                                  "FROM ARTICULOS A, CATEGORIAS C, MARCAS M " +
+                                  "WHERE C.Id = A.IdCategoria AND A.IdCategoria = M.Id AND ";
 
                 if (campo == "Codigo")
                 {
+                    consulta += "Codigo LIKE @filtro";
                     switch (criterio)
                     {
                         case "Comienza con":
-                            consulta += "Codigo like '" + filtro + "%' ";
+                            datos.setearParametro("@filtro", filtro + "%");
                             break;
                         case "Termina con":
-                            consulta += "Codigo like '%" + filtro + "'";
+                            datos.setearParametro("@filtro", "%" + filtro);
                             break;
                         default:
-                            consulta += "Codigo like '%" + filtro + "%'";
+                            datos.setearParametro("@filtro", "%" + filtro + "%");
                             break;
                     }
                 }
-
                 else
                 {
                     switch (criterio)
                     {
                         case "Mayor a":
-                            consulta += "Precio > " + filtro;
+                            consulta += "Precio > @filtro";
+                            datos.setearParametro("@filtro", decimal.Parse(filtro));
                             break;
                         case "Menor a":
-                            consulta += "Precio < " + filtro;
+                            consulta += "Precio < @filtro";
+                            datos.setearParametro("@filtro", decimal.Parse(filtro));
                             break;
                         default:
-                            consulta += "Precio = " + filtro;
+                            consulta += "Precio = @filtro";
+                            datos.setearParametro("@filtro", decimal.Parse(filtro));
                             break;
                     }
                 }
 
-
-
-
                 datos.setearConsulta(consulta);
                 datos.ejecutarLectura();
+
                 while (datos.Lector.Read())
                 {
                     Articulo aux = new Articulo();
@@ -346,23 +339,22 @@ namespace Negocio
                     aux.Precio = (decimal)datos.Lector["Precio"];
 
                     lista.Add(aux);
-
                 }
 
                 return lista;
             }
-            catch (Exception ex)
+            finally
             {
-
-                throw ex;
+                datos.cerrarConexion();
             }
         }
+
         public bool ExisteArticulo(string codigo, string nombre)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.setearConsulta("SELECT COUNT(*) FROM ARTICULOS WHERE Codigo = @codigo OR Nombre = @nombre");
+                datos.setearConsulta("SELECT COUNT(*) FROM ARTICULOS WHERE Codigo=@codigo OR Nombre=@nombre");
                 datos.setearParametro("@codigo", codigo);
                 datos.setearParametro("@nombre", nombre);
                 datos.ejecutarLectura();

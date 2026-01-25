@@ -29,10 +29,25 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void txtFiltro_TextChanged(object sender, EventArgs e)
         {
+            
             List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
             List<Articulo> listaFiltrada = lista.FindAll(x => x.Nombre.ToUpper().Contains(txtFiltro.Text.ToUpper()));
-            repRepetidor.DataSource = listaFiltrada;
-            repRepetidor.DataBind();
+
+            if (listaFiltrada.Count == 0)
+            {
+                lblMensaje.Text = "No se encontraron artículos con ese nombre.";
+                lblMensaje.Visible = true;   // mostrar el label si no hay resultado de busqueda
+                repRepetidor.DataSource = null;
+                repRepetidor.DataBind();
+            }
+            else
+            {
+                lblMensaje.Visible = false;  // ocultar el label si hay resultados
+                repRepetidor.DataSource = listaFiltrada;
+                repRepetidor.DataBind();
+            }
+
+
         }
 
         protected void btnComprar_Click(object sender, EventArgs e)
@@ -84,7 +99,7 @@ namespace tp_final_Nivel3_sostaric_patricio
             }
             catch (Exception ex)
             {
-                // Manejar la excepción, por ejemplo, mostrar un mensaje de error
+                
                 Session.Add("error", "Error al agregar artículo a favoritos: " + ex.Message);
                 Response.Redirect("Error.aspx", false);
             }
