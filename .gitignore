@@ -1,1 +1,14 @@
 .vs
+bin/
+obj/
+*.dll
+*.pdb
+*.cache
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# NuGet packages
+packages/
