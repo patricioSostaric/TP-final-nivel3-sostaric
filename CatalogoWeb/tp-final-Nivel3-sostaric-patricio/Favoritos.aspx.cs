@@ -20,18 +20,10 @@ namespace tp_final_Nivel3_sostaric_patricio
             if (!IsPostBack)
             {
                 Usuario user = ObtenerUsuario();
-                if (Session["ListaFavoritos"] == null)
-                {
-                    ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
-                    List<int> idArticulosFavoritos = negocioart.listarFavUserId(user.Id);
-                    Session["ListaFavoritos"] = idArticulosFavoritos.Count > 0
-                        ? new ArticuloNegocio().listarArtById(idArticulosFavoritos)
-                        : new List<Articulo>();
-                }
+                ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
+                Session["ListaFavoritos"] = negocioart.ListarFavoritosPorUsuario(user.Id);
                 Cargar();
             }
-
-
 
 
 
@@ -76,6 +68,8 @@ namespace tp_final_Nivel3_sostaric_patricio
         }
     }
 }
+
+
 
 
 

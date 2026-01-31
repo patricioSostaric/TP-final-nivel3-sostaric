@@ -17,11 +17,11 @@ namespace tp_final_Nivel3_sostaric_patricio
             
 
             ArticuloNegocio negocio = new ArticuloNegocio();
-            ListaArticulo = negocio.listarConSP();
+            ListaArticulo = negocio.Listar();
 
             if (!IsPostBack)
             {
-                Session.Add("listaArticulos", negocio.listarConSP());
+                Session.Add("listaArticulos", negocio.Listar());
                 repRepetidor.DataSource = Session["listaArticulos"];
                 repRepetidor.DataBind();
             }
@@ -88,7 +88,7 @@ namespace tp_final_Nivel3_sostaric_patricio
                         listaArticulos = new List<Articulo>();
                     }
                     ArticuloNegocio artNegocio = new ArticuloNegocio();
-                    Articulo articulo = artNegocio.listarArtById(new List<int> { idArticulo }).FirstOrDefault();
+                    Articulo articulo = artNegocio.BuscarPorId(idArticulo);
                     if (articulo != null)
                     {
                         listaArticulos.Add(articulo);

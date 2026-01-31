@@ -42,7 +42,7 @@ namespace tp_final_Nivel3_sostaric_patricio
                 if (id != "" && !IsPostBack)
                 {
                     ArticuloNegocio negocio = new ArticuloNegocio();
-                    Articulo seleccionado = (negocio.listar(id))[0];
+                    Articulo seleccionado = (negocio.Listar(id))[0];
 
 
                     //Cargar todos los campos . 

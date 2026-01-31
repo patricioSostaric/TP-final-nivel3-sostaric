@@ -20,6 +20,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><%#Eval("Nombre") %></h5>
                             <p class="card-text"><%#Eval("Descripcion") %></p>
+                            <p class="card-text"><%#Eval("Precio", "{0:F2}") %></p>
                             <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
                             <asp:Button ID="btnEliminarFavorito" CssClass="btn" runat="server" Text="❌"
                                 CommandName="ArticuloId" CommandArgument='<%#Eval("Id")%>' OnClick="btnEliminarFavorito_Click" />

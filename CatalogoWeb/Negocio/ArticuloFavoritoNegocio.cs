@@ -10,36 +10,51 @@ namespace Negocio
 {
     public class ArticuloFavoritoNegocio
     {
-        public List<int> listarFavUserId(int idUser)
+        public List<Articulo> ListarFavoritosPorUsuario(int idUser)
         {
+            List<Articulo> lista = new List<Articulo>();
             AccesoDatos datos = new AccesoDatos();
-            List<int> lista = new List<int>();
 
             try
             {
-                datos.setearConsulta("Select IdArticulo from FAVORITOS where IdUser = @idUser");
+                datos.setearConsulta("SELECT A.Id, A.Codigo, A.Nombre, A.Descripcion, A.IdMarca, M.Descripcion TipoMarca, " +
+                                     "A.IdCategoria, C.Descripcion TipoCategoria, A.ImagenUrl, A.Precio " +
+                                     "FROM FAVORITOS F " +
+                                     "INNER JOIN ARTICULOS A ON F.IdArticulo = A.Id " +
+                                     "INNER JOIN MARCAS M ON A.IdMarca = M.Id " +
+                                     "INNER JOIN CATEGORIAS C ON A.IdCategoria = C.Id " +
+                                     "WHERE F.IdUser = @idUser");
                 datos.setearParametro("@idUser", idUser);
                 datos.ejecutarLectura();
+
                 while (datos.Lector.Read())
                 {
-                    int aux = (int)datos.Lector["idArticulo"];
+                    Articulo aux = new Articulo();
+                    aux.Id = (int)datos.Lector["Id"];
+                    aux.Codigo = (string)datos.Lector["Codigo"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    if (!(datos.Lector["Descripcion"] is DBNull))
+                        aux.Descripcion = (string)datos.Lector["Descripcion"];
+                    aux.TipoMarca = new Marca { Id = (int)datos.Lector["IdMarca"], Descripcion = (string)datos.Lector["TipoMarca"] };
+                    aux.TipoCategoria = new Categoria { Id = (int)datos.Lector["IdCategoria"], Descripcion = (string)datos.Lector["TipoCategoria"] };
+                    if (!(datos.Lector["ImagenUrl"] is DBNull))
+                        aux.ImagenUrl = (string)datos.Lector["ImagenUrl"];
+                    aux.Precio = (decimal)datos.Lector["Precio"];
+
                     lista.Add(aux);
                 }
 
-                datos.cerrarConexion();
                 return lista;
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
             }
             finally
             {
                 datos.cerrarConexion();
             }
-
         }
+
+
+        
+        
 
         public void insertarNuevoFavorito(ArticuloFavorito nuevo)
         {

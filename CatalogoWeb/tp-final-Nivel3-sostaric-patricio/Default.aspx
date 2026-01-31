@@ -31,6 +31,7 @@
                         <div class="card-body">
                             <h5 class="card-title"><%#Eval("Nombre") %></h5>
                             <p class="card-text"><%#Eval("Descripcion") %></p>
+                            <p class="card-text"><%#Eval("Precio", "{0:F2}") %></p>
                             <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
                             <asp:Button Text="Comprar" CssClass="btn btn-secondary" ID="btnComprar" CommanArgument='<%#Eval("Id") %>' CommandName="ArticuloId" OnClick="btnComprar_Click" runat="server" />
                             <asp:Button ID="btnAgregarFavorito" runat="server" CommandArgument='<%# Eval("Id") %>' OnClick="btnAgregarFavorito_Click" Text="♡" CssClass="btn btn-link" Visible='<%# Session["Usuario"] != null %>' />

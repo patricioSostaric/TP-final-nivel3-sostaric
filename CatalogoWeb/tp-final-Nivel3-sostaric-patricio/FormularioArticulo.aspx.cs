@@ -43,9 +43,9 @@ namespace tp_final_Nivel3_sostaric_patricio
                 if (id != "" && !IsPostBack)
                 {
                     ArticuloNegocio negocio = new ArticuloNegocio();
-                    //List<Articulo> lista = negocio.listar(id);
-                    //Articulo seleccionado = lista[0];
-                    Articulo seleccionado = (negocio.listar(id))[0];
+                    // Usamos BuscarPorId porque devuelve directamente un solo artículo
+
+                    Articulo seleccionado = negocio.BuscarPorId(int.Parse(id));
 
                     //guardo Articulo seleccionado en session
                     Session.Add("ArticuloSeleccionado", seleccionado);
@@ -90,10 +90,10 @@ namespace tp_final_Nivel3_sostaric_patricio
                 if (Request.QueryString["id"] != null)
                 {
                     nuevo.Id = int.Parse(txtId.Text);
-                    negocio.modificarConSP(nuevo);
+                    negocio.Modificar(nuevo);
                 }
                 else
-                    negocio.agregarConSP(nuevo);
+                    negocio.Agregar(nuevo);
 
 
                 Response.Redirect("ArticuloLista.aspx", false);
@@ -122,7 +122,7 @@ namespace tp_final_Nivel3_sostaric_patricio
                 if (chkConfirmaEliminacion.Checked)
                 {
                     ArticuloNegocio negocio = new ArticuloNegocio();
-                    negocio.eliminar(int.Parse(txtId.Text));
+                    negocio.Eliminar(int.Parse(txtId.Text));
                     Response.Redirect("ArticuloLista.aspx",false);
                 }
             }

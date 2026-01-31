@@ -64,6 +64,8 @@ C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patrici
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final.AEA9B2DB.Up2Date
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.dll
 C:\Users\COMPU\Desktop\catalogoweb1\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.pdb
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.csproj.AssemblyReference.cache
+C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.csproj.CoreCompileInputs.cache
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\tp-final-Nivel3-sostaric-patricio.dll.config
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\tp-final-Nivel3-sostaric-patricio.dll
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\tp-final-Nivel3-sostaric-patricio.pdb
@@ -125,8 +127,6 @@ C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-pat
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\Dominio.pdb
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\Negocio.pdb
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.csproj.AssemblyReference.cache
-C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.csproj.CoreCompileInputs.cache
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final.AEA9B2DB.Up2Date
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.dll
 C:\Users\patri\TP-final-nivel3-sostaric\CatalogoWeb\tp-final-Nivel3-sostaric-patricio\obj\Debug\tp-final-Nivel3-sostaric-patricio.pdb

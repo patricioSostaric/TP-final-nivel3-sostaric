@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MiMasterpage.Master" AutoEventWireup="true" CodeBehind="ArticuloLista.aspx.cs" Inherits="tp_final_Nivel3_sostaric_patricio.ArticuloLista1" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MiMasterpage.Master" AutoEventWireup="true" CodeBehind="ArticuloLista.aspx.cs" Inherits="tp_final_Nivel3_sostaric_patricio.ArticuloLista" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
@@ -14,7 +14,9 @@
 
             </div>
         </div>
-
+        <div id="mensaje" class="mb-3">
+            <asp:Label ID="lblMensaje" runat="server" Visible="false" CssClass="" />
+        </div>
         <div class="col-6" style="display: flex; flex-direction: column; justify-content: flex-end;">
 
             <div class="mb-3">
@@ -29,10 +31,11 @@
                 <div class="mb-3">
                     <asp:Label Text="Campo" ID="lblCampo" runat="server" />
                     <asp:DropDownList runat="server" AutoPostBack="true" CssClass="form-control" ID="ddlCampo" OnSelectedIndexChanged="ddlCampo_SelectedIndexChanged">
-
                         <asp:ListItem Text="Código" Value="Codigo"></asp:ListItem>
+                        <asp:ListItem Text="Nombre" Value="Nombre"></asp:ListItem>
                         <asp:ListItem Text="Precio" Value="Precio"></asp:ListItem>
-
+                        <asp:ListItem Text="Marca" Value="Marca"></asp:ListItem>
+                        <asp:ListItem Text="Categoría" Value="Categoria"></asp:ListItem>
                     </asp:DropDownList>
                 </div>
             </div>
@@ -54,22 +57,26 @@
             <div class="col-3">
                 <div class="mb-3">
                     <asp:Button Text="Buscar" runat="server" CssClass="btn btn-primary" ID="btnBuscar" OnClick="btnBuscar_Click" />
+                    <asp:Button Text="Limpiar filtros" runat="server" CssClass="btn btn-secondary ms-2"
+                        ID="btnLimpiar" OnClick="btnLimpiar_Click" />
                 </div>
+
             </div>
         </div>
         <%} %>
     </div>
+
     <div>
         <asp:GridView ID="dgvArticulos" CssClass="table table-striped table-hover table-m" AutoGenerateColumns="false" DataKeyNames="Id"
             OnSelectedIndexChanged="dgvArticulos_SelectedIndexChanged"
             OnPageIndexChanging="dgvArticulos_PageIndexChanging"
             AllowPaging="true" PageSize="5" runat="server">
             <EmptyDataTemplate>
-            <div class="alert alert-danger d-flex align-items-center" role="alert">
-                <span class="me-2">⚠️</span>
-                <span>No se encontraron artículos con ese criterio.</span>
-            </div>
-        </EmptyDataTemplate>
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <span class="me-2">⚠️</span>
+                    <span>No se encontraron artículos con ese criterio.</span>
+                </div>
+            </EmptyDataTemplate>
 
 
             <Columns>
@@ -78,7 +85,7 @@
                 <asp:BoundField HeaderText="Descripción" DataField="Descripcion" />
                 <asp:BoundField HeaderText="Marca" DataField="TipoMarca.Descripcion" />
                 <asp:BoundField HeaderText="Categoría" DataField="TipoCategoria.Descripcion" />
-                <asp:BoundField HeaderText="Precio" DataField="Precio" />
+                <asp:BoundField HeaderText="Precio" DataField="Precio" DataFormatString="{0:F2}" />
                 <asp:CommandField HeaderText="Acción" ShowSelectButton="true" SelectText="✏️" />
             </Columns>
         </asp:GridView>
