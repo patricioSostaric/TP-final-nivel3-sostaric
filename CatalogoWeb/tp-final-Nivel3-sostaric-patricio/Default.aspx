@@ -5,7 +5,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <h1 class="CentrarTitulo">¡Bienvenido/a!</h1>
     <p>Te encuentras en la web de articulos.</p>
-    <h2>Lista de Articulos</h2>
+    <h3>Lista de Articulos</h3>
     <div class="row">
         <div class="Margen">
             <div class="col-6">

@@ -38,16 +38,11 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void txtFiltro_TextChanged(object sender, EventArgs e)
         {
-            //  List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
-            //List<Articulo> listaFiltrada = lista.FindAll(x => x.Nombre.ToUpper().Contains(txtFiltro.Text.ToUpper()));
-            //dgvArticulos.DataSource = listaFiltrada;
-            //dgvArticulos.DataBind();
+           
             try
             {
-                string filtro = txtFiltro.Text.Trim();
-
-                // Validación: filtro vacío
-                if (string.IsNullOrWhiteSpace(filtro))
+                // Validación: filtro vacío usando clase Validacion
+                if (Validacion.ValidaTextoVacio(txtFiltro))
                 {
                     lblMensaje.Text = "⚠ Ingresá un valor para buscar por nombre.";
                     lblMensaje.CssClass = "alert alert-warning d-block";
@@ -68,8 +63,7 @@ namespace tp_final_Nivel3_sostaric_patricio
 
                 List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
                 List<Articulo> listaFiltrada = lista.FindAll(x =>
-                    x.Nombre.ToUpper().Contains(filtro.ToUpper()));
-
+                    x.Nombre.ToUpper().Contains(txtFiltro.Text.Trim().ToUpper()));
 
                 dgvArticulos.DataSource = listaFiltrada;
                 dgvArticulos.DataBind();
@@ -80,6 +74,8 @@ namespace tp_final_Nivel3_sostaric_patricio
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
+
+
 
 
         }
@@ -93,7 +89,12 @@ namespace tp_final_Nivel3_sostaric_patricio
             {
                 // Limpia el filtro común al activar el avanzado
                 txtFiltro.Text = string.Empty;
-                lblMensaje.Visible = false; // oculta mensajes previos
+                lblMensaje.Visible = false; // oculta los mensajes previos
+
+                //  Recargar la grilla con todos los artículos
+                dgvArticulos.DataSource = Session["listaArticulos"];
+                dgvArticulos.DataBind();
+
             }
 
             if (!FiltroAvanzado)
@@ -131,25 +132,23 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void btnBuscar_Click(object sender, EventArgs e)
         {
-           
-        
+
             try
             {
                 string campo = ddlCampo.SelectedValue;
                 string criterio = ddlCriterio.SelectedValue;
-                string filtro = txtFiltroAvanzado.Text.Trim();
 
-                // Validación: filtro vacío
-                if (string.IsNullOrWhiteSpace(filtro))
+                
+                if (Validacion.ValidaTextoVacio(txtFiltroAvanzado))
                 {
                     lblMensaje.Text = "⚠ Ingresá un valor para filtrar.";
                     lblMensaje.CssClass = "alert alert-warning d-block";
                     lblMensaje.Visible = true;
-                    return; // corta la ejecución, no llama a Filtrar
+                    return;
                 }
 
-                // Validación: filtro no numérico en campo Precio
-                if (campo == "Precio" && !decimal.TryParse(filtro, out _))
+                
+                if (campo == "Precio" && !Validacion.ValidaDecimal(txtFiltroAvanzado, out decimal precio))
                 {
                     lblMensaje.Text = "⚠ Ingresá un número válido para el campo Precio.";
                     lblMensaje.CssClass = "alert alert-warning d-block";
@@ -157,20 +156,11 @@ namespace tp_final_Nivel3_sostaric_patricio
                     return;
                 }
 
-                // Ejecución del filtro
+                
                 ArticuloNegocio negocio = new ArticuloNegocio();
-                var listaFiltrada = negocio.Filtrar(campo, criterio, filtro);
+                var listaFiltrada = negocio.Filtrar(campo, criterio, txtFiltroAvanzado.Text.Trim());
 
-                if (listaFiltrada.Count == 0)
-                {
-                    lblMensaje.Text = "⚠ No se encontraron artículos con ese criterio.";
-                    lblMensaje.CssClass = "alert alert-danger d-block";
-                    lblMensaje.Visible = true;
-                }
-                else
-                {
-                    lblMensaje.Visible = false;
-                }
+               
 
                 dgvArticulos.DataSource = listaFiltrada;
                 dgvArticulos.DataBind();
@@ -181,9 +171,6 @@ namespace tp_final_Nivel3_sostaric_patricio
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
-        
-
-
         }
 
         protected void dgvArticulos_SelectedIndexChanged(object sender, EventArgs e)

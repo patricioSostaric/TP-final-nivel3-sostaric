@@ -20,35 +20,51 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             if (Page.IsValid)
             {
-
-
                 try
                 {
-                    Usuario user = new Usuario();
+                    
+                    if (Validacion.ValidaTextoVacio(txtEmail) || Validacion.ValidaTextoVacio(txtPassword))
+                    {
+                        Session.Add("error", "⚠ Email y contraseña son obligatorios.");
+                        Response.Redirect("Error.aspx", false);
+                        return;
+                    }
+
+                    Usuario user = new Usuario
+                    {
+                        Email = txtEmail.Text,
+                        Pass = txtPassword.Text
+                    };
+
                     UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
                     EmailService emailService = new EmailService();
 
-                    user.Email = txtEmail.Text;
-                    user.Pass = txtPassword.Text;
+                    
                     user.Id = usuarioNegocio.insertarNuevo(user);
-                    Session.Add("usuarios", user);
 
-                    emailService.armarCorreo(user.Email, "Bienvenido usuario", "Hola te damos la bienvenida a la aplicación...");
+                    
+                    Session.Add("Usuario", user);
+
+                    // Enviar correo de bienvenida
+                    emailService.armarCorreo(user.Email, "Bienvenido usuario", "Hola, te damos la bienvenida a la aplicación...");
                     emailService.enviarEmail();
-                    Response.Redirect("Default.aspx", false);
 
+                    Response.Redirect("Default.aspx", false);
                 }
                 catch (Exception ex)
                 {
-                    Session.Add("error", ex.ToString());
+                    Session.Add("error", "Error en registro: " + ex.Message);
+                    Response.Redirect("Error.aspx", false);
                 }
             }
+
+
         }
 
         protected void cvEmail_ServerValidate(object source, ServerValidateEventArgs args)
         {
             EmailService emailService = new EmailService();
-            args.IsValid = !emailService.EmailYaRegistrado(txtEmail.Text);
+            args.IsValid = !string.IsNullOrWhiteSpace(txtEmail.Text) && !emailService.EmailYaRegistrado(txtEmail.Text);
         }
     }
 }

@@ -1,11 +1,12 @@
-﻿using Negocio;
+﻿using Dominio;
+using Negocio;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Dominio;
 
 namespace tp_final_Nivel3_sostaric_patricio
 {
@@ -15,7 +16,6 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             try
             {
-
                 if (!IsPostBack)
                 {
                     if (Seguridad.sesionActiva(Session["Usuario"]))
@@ -25,19 +25,21 @@ namespace tp_final_Nivel3_sostaric_patricio
                         txtEmail.ReadOnly = true;
                         txtNombre.Text = user.Nombre;
                         txtApellido.Text = user.Apellido;
+
                         if (!string.IsNullOrEmpty(user.UrlImagenPerfil))
                         {
-                            imgNuevoPerfil.ImageUrl = "~/Images/" + user.UrlImagenPerfil + "?v=" + DateTime.Now.Ticks.ToString();
+                            imgNuevoPerfil.ImageUrl = "~/Images/" + user.UrlImagenPerfil + "?v=" + DateTime.Now.Ticks;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-
-                Session.Add("error", ex.ToString());
-                Response.Redirect("Error.aspx");
+                Session.Add("error", "Error en MiPerfil: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
             }
+
+
 
         }
 
@@ -45,40 +47,47 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             try
             {
-                // Deben estar para que las validaciones de los controles asp funcionen:
                 Page.Validate();
                 if (!Page.IsValid)
                     return;
 
                 UsuarioNegocio negocio = new UsuarioNegocio();
-                Usuario user = (Usuario)Session["usuario"];
-                //Escribir img
-                if (txtImagen.PostedFile.FileName != "")
+                Usuario user = (Usuario)Session["Usuario"]; 
+
+                // Guardar imagen si se subió
+                if (txtImagen.PostedFile != null && txtImagen.PostedFile.ContentLength > 0)
                 {
-                    string ruta = Server.MapPath("./Images/");
-                    txtImagen.PostedFile.SaveAs(ruta + "perfil-" + user.Id + ".jpg");
-                    user.UrlImagenPerfil = "perfil-" + user.Id + ".jpg";
+                    string ruta = Server.MapPath("~/Images/");
+                    string nombreArchivo = "perfil-" + user.Id + ".jpg";
+                    string rutaCompleta = Path.Combine(ruta, nombreArchivo);
+
+                    txtImagen.PostedFile.SaveAs(rutaCompleta);
+                    user.UrlImagenPerfil = nombreArchivo;
                 }
 
+                // Actualizar datos
                 user.Nombre = txtNombre.Text;
                 user.Apellido = txtApellido.Text;
-
-                //Guardar datos en el perfil
                 negocio.actualizar(user);
 
-                //Leer imgagen
-                Image img = (Image)Master.FindControl("imgAvatar");
-                img.ImageUrl = "~/Images/" + user.UrlImagenPerfil + "?v=" + DateTime.Now.Ticks.ToString();
-
+                // Refrescar avatar en MasterPage
+                Image img = Master.FindControl("imgAvatar") as Image;
+                if (img != null && !string.IsNullOrEmpty(user.UrlImagenPerfil))
+                {
+                    img.ImageUrl = "~/Images/" + user.UrlImagenPerfil + "?v=" + DateTime.Now.Ticks;
+                }
             }
             catch (Exception ex)
             {
-                Session.Add("error", ex.ToString());
-                Response.Redirect("Error.aspx");
+                Session.Add("error", "Error al guardar perfil: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
             }
+
+
+
         }
 
-       
+
     }
     
 }

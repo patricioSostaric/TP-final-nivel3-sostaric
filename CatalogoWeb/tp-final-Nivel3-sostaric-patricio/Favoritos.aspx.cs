@@ -16,10 +16,16 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         {
 
-
             if (!IsPostBack)
             {
                 Usuario user = ObtenerUsuario();
+                if (user == null)
+                {
+                    Session.Add("error", "⚠ Debe iniciar sesión para ver favoritos.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
+                }
+
                 ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
                 Session["ListaFavoritos"] = negocioart.ListarFavoritosPorUsuario(user.Id);
                 Cargar();
@@ -27,17 +33,35 @@ namespace tp_final_Nivel3_sostaric_patricio
 
 
 
+
         }
 
         protected void btnEliminarFavorito_Click(object sender, EventArgs e)
         {
+            try
+            {
+                string argumento = ((Button)sender).CommandArgument;
+
+                // Validación  ID debe ser entero válido
+                if (Validacion.ValidaEntero(argumento, out int idArticulo))
+                {
+                    EliminarFavorito(idArticulo);
+                    Cargar(); // refresca la página
+                }
+                else
+                {
+                    Session.Add("error", "⚠ El ID del artículo no es válido.");
+                    Response.Redirect("Error.aspx", false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error", "Error al eliminar favorito: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
+            }
 
 
-            // Obtener el IdArticuloFav del botón que se hizo click
-            int idArticulo = int.Parse(((Button)sender).CommandArgument);
-            EliminarFavorito(idArticulo);
-            //actualizar la pagina:
-            Cargar();
+
 
         }
         private void Cargar()
@@ -52,22 +76,42 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         public Usuario ObtenerUsuario()
         {
-            return (Usuario)Session["Usuario"] ?? null;
+            return (Usuario)Session["Usuario"] ;
+           
         }
         private void EliminarFavorito(int idArticulo)
         {
-
             Usuario user = ObtenerUsuario();
-            ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
-            negocio.eliminarFavorito(idArticulo, user.Id);
-            List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"] ?? new List<Articulo>();
-            listaArticulos.RemoveAll(a => a.Id == idArticulo);
-            Session["ListaFavoritos"] = listaArticulos;
-            Cargar();
+            if (user == null)
+            {
+                Session.Add("error", "⚠ Usuario no válido.");
+                Response.Redirect("Error.aspx", false);
+                return;
+            }
 
+            ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
+            try
+            {
+                negocio.eliminarFavorito(idArticulo, user.Id);
+
+                List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"] ?? new List<Articulo>();
+                listaArticulos.RemoveAll(a => a.Id == idArticulo);
+                Session["ListaFavoritos"] = listaArticulos;
+
+                Cargar();
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error", "Error al eliminar favorito: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
+            }
         }
+
+
+
     }
 }
+
 
 
 

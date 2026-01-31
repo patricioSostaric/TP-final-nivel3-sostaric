@@ -15,69 +15,91 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             try
             {
-                
                 if (!IsPostBack)
                 {
                     MarcaNegocio marcanegocio = new MarcaNegocio();
-                    List<Marca> listaMarcas = marcanegocio.listar();
-
-
-                    CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
-                    List<Categoria> listaCategorias = categoriaNegocio.listar();
-
-                    ddlMarca.DataSource = listaMarcas;
+                    ddlMarca.DataSource = marcanegocio.listar();
                     ddlMarca.DataValueField = "Id";
                     ddlMarca.DataTextField = "Descripcion";
                     ddlMarca.DataBind();
 
-                    ddlCategoria.DataSource = listaCategorias;
+                    CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+                    ddlCategoria.DataSource = categoriaNegocio.listar();
                     ddlCategoria.DataValueField = "Id";
                     ddlCategoria.DataTextField = "Descripcion";
                     ddlCategoria.DataBind();
                 }
 
-                //Configuración si estamos modificando.
-                string id = Request.QueryString["id"] != null ? Request.QueryString["id"].ToString() : "";
-
-                if (id != "" && !IsPostBack)
+                // Configuración si estamos modificando
+                string idParam = Request.QueryString["id"];
+                if (!string.IsNullOrWhiteSpace(idParam) && !IsPostBack)
                 {
-                    ArticuloNegocio negocio = new ArticuloNegocio();
-                    Articulo seleccionado = (negocio.Listar(id))[0];
+                    if (int.TryParse(idParam, out int idArticulo))
+                    {
+                        ArticuloNegocio negocio = new ArticuloNegocio();
+                        var lista = negocio.Listar(idParam);
 
+                        if (lista != null && lista.Count > 0)
+                        {
+                            Articulo seleccionado = lista[0];
 
-                    //Cargar todos los campos . 
-                    txtId.Text = id;
-                    txtId.ReadOnly = true;
-                    txtCodigo.Text = seleccionado.Codigo;
-                    txtCodigo.ReadOnly = true;
-                    txtNombre.Text = seleccionado.Nombre;
-                    txtNombre.ReadOnly = true;
-                    txtDescripcion.Text = seleccionado.Descripcion;
-                    txtDescripcion.ReadOnly = true;
-                    txtPrecio.Text = seleccionado.Precio.ToString();
-                    txtPrecio.ReadOnly = true;
-                    txtImagenUrl.Text = seleccionado.ImagenUrl;
-                    txtImagenUrl.ReadOnly = true;
+                            txtId.Text = idParam;
+                            txtId.ReadOnly = true;
 
-                    ddlMarca.SelectedValue = seleccionado.TipoMarca.Id.ToString();
-                    ddlMarca.Enabled = false;
-                    ddlCategoria.SelectedValue = seleccionado.TipoCategoria.Id.ToString();
-                    ddlCategoria.Enabled = false;
+                            txtCodigo.Text = seleccionado.Codigo ?? string.Empty;
+                            txtCodigo.ReadOnly = true;
 
-                    txtImagenUrl_TextChanged(sender, e);
+                            txtNombre.Text = seleccionado.Nombre ?? string.Empty;
+                            txtNombre.ReadOnly = true;
 
+                            txtDescripcion.Text = seleccionado.Descripcion ?? string.Empty;
+                            txtDescripcion.ReadOnly = true;
+
+                            txtPrecio.Text = seleccionado.Precio.ToString("0.00");
+                            txtPrecio.ReadOnly = true;
+
+                            txtImagenUrl.Text = seleccionado.ImagenUrl ?? string.Empty;
+                            txtImagenUrl.ReadOnly = true;
+
+                            ddlMarca.SelectedValue = seleccionado.TipoMarca?.Id.ToString();
+                            ddlMarca.Enabled = false;
+
+                            ddlCategoria.SelectedValue = seleccionado.TipoCategoria?.Id.ToString();
+                            ddlCategoria.Enabled = false;
+
+                            txtImagenUrl_TextChanged(sender, e);
+                        }
+                        else
+                        {
+                            Session.Add("error", "⚠ No se encontró el artículo solicitado.");
+                            Response.Redirect("Error.aspx", false);
+                        }
+                    }
+                    else
+                    {
+                        Session.Add("error", "⚠ El parámetro ID no es válido.");
+                        Response.Redirect("Error.aspx", false);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Session.Add("error", ex.ToString());
-                Response.Redirect("Error.aspx");
+                Session.Add("error", "Error en DetalleArticulo: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
             }
+
+
+
+
         }
 
         protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
         {
-            imgArticulo.ImageUrl = txtImagenUrl.Text;
+           
+            if (!string.IsNullOrWhiteSpace(txtImagenUrl.Text))
+                imgArticulo.ImageUrl = txtImagenUrl.Text;
+           
+
         }
     }
 }

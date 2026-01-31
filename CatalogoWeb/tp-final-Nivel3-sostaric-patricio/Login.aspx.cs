@@ -22,7 +22,7 @@ namespace tp_final_Nivel3_sostaric_patricio
             UsuarioNegocio negocio = new UsuarioNegocio();
             try
             {
-                if (Validacion.validaTextoVacio(txtEmail) || Validacion.validaTextoVacio(txtPassword))
+                if (Validacion.ValidaTextoVacio(txtEmail) || Validacion.ValidaTextoVacio(txtPassword))
                 {
                     Session.Add("error", "Debes completar ambos campos...");
                     Response.Redirect("Error.aspx");

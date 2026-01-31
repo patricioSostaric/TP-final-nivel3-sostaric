@@ -11,17 +11,23 @@ namespace tp_final_Nivel3_sostaric_patricio
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+            string mensaje = null;
+
             if (Session["error"] != null)
             {
-                lblError.Text = Session["error"].ToString();
+                mensaje = Session["error"].ToString();
                 Session.Remove("error");
             }
             else if (Session["duplicado"] != null)
             {
-                lblError.Text = Session["duplicado"].ToString();
+                mensaje = Session["duplicado"].ToString();
                 Session.Remove("duplicado");
             }
+
+            lblError.Text = !string.IsNullOrWhiteSpace(mensaje)
+                ? mensaje
+                : "⚠ Ha ocurrido un error desconocido.";
+
 
 
         }

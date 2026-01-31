@@ -56,6 +56,7 @@ namespace tp_final_Nivel3_sostaric_patricio
                     txtDescripcion.Text = seleccionado.Descripcion;
                     txtImagenUrl.Text = seleccionado.ImagenUrl;
                     txtCodigo.Text = seleccionado.Codigo.ToString();
+                    txtPrecio.Text = seleccionado.Precio.ToString("0.00");
 
 
                     ddlCategoria.SelectedValue = seleccionado.TipoCategoria.Id.ToString();
@@ -75,34 +76,53 @@ namespace tp_final_Nivel3_sostaric_patricio
             try
             {
                 Articulo nuevo = new Articulo();
-                ArticuloNegocio negocio = new ArticuloNegocio();
+                
 
                 nuevo.Codigo = txtCodigo.Text;
                 nuevo.Nombre = txtNombre.Text;
                 nuevo.Descripcion = txtDescripcion.Text;
                 nuevo.ImagenUrl = txtImagenUrl.Text;
 
-                nuevo.TipoCategoria = new Categoria();
-                nuevo.TipoCategoria.Id = int.Parse(ddlCategoria.SelectedValue);
-                nuevo.TipoMarca = new Marca();
-                nuevo.TipoMarca.Id = int.Parse(ddlMarca.SelectedValue);
-
-                if (Request.QueryString["id"] != null)
+                // Validar y asignar precio
+                if (!Validacion.ValidaDecimal(txtPrecio, out decimal precio))
                 {
-                    nuevo.Id = int.Parse(txtId.Text);
+                    Session.Add("error", "⚠ El precio debe ser un número válido.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
+                }
+                nuevo.Precio = precio;
+                // Validar selección de combos
+                if (!Validacion.ValidaDropDown(ddlCategoria) || !Validacion.ValidaDropDown(ddlMarca))
+                {
+                    Session.Add("error", "⚠ Debe seleccionar una categoría y una marca.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
+                }
+
+                nuevo.TipoCategoria = new Categoria { Id = int.Parse(ddlCategoria.SelectedValue) };
+                nuevo.TipoMarca = new Marca { Id = int.Parse(ddlMarca.SelectedValue) };
+
+                ArticuloNegocio negocio = new ArticuloNegocio();
+
+                if (Request.QueryString["id"] != null && Validacion.ValidaEntero(txtId.Text, out int idArticulo))
+                {
+                    nuevo.Id = idArticulo;
                     negocio.Modificar(nuevo);
                 }
                 else
+                {
                     negocio.Agregar(nuevo);
-
+                }
 
                 Response.Redirect("ArticuloLista.aspx", false);
             }
             catch (Exception ex)
             {
-                Session.Add("error", ex.ToString());
-                Response.Redirect("Error.aspx");
+                Session.Add("error", "Error al guardar artículo: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
             }
+
+
         }
 
         protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
@@ -119,18 +139,31 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             try
             {
-                if (chkConfirmaEliminacion.Checked)
+                if (!chkConfirmaEliminacion.Checked)
                 {
-                    ArticuloNegocio negocio = new ArticuloNegocio();
-                    negocio.Eliminar(int.Parse(txtId.Text));
-                    Response.Redirect("ArticuloLista.aspx",false);
+                    Session.Add("error", "⚠ Debe confirmar la eliminación antes de continuar.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
                 }
+
+                if (!Validacion.ValidaEntero(txtId.Text, out int idArticulo))
+                {
+                    Session.Add("error", "⚠ El ID del artículo no es válido.");
+                    Response.Redirect("Error.aspx", false);
+                    return;
+                }
+
+                ArticuloNegocio negocio = new ArticuloNegocio();
+                negocio.Eliminar(idArticulo);
+                Response.Redirect("ArticuloLista.aspx", false);
             }
             catch (Exception ex)
             {
-                Session.Add("error", ex.ToString());
-                Response.Redirect("Error.aspx",false);
+                Session.Add("error", "Error al eliminar artículo: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
             }
+
+
         }
     }
 }

@@ -4,26 +4,28 @@
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <h1>grilla de articulos</h1>
-
-    <div class="row">
-        <div class="col-6">
-            <div class="mb-3">
-                <asp:Label Text="Buscar por nombre" runat="server" />
-
-                <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtFiltro_TextChanged" />
-
-            </div>
+  
+<div class="row">
+    
+    <div class="col-6">
+        <div class="mb-3">
+            <asp:Label Text="Buscar por nombre" runat="server" />
+            <asp:TextBox runat="server" ID="txtFiltro" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtFiltro_TextChanged" />
         </div>
-        <div id="mensaje" class="mb-3">
-            <asp:Label ID="lblMensaje" runat="server" Visible="false" CssClass="" />
-        </div>
-        <div class="col-6" style="display: flex; flex-direction: column; justify-content: flex-end;">
+    </div>
 
-            <div class="mb-3">
-
-                <asp:CheckBox runat="server" Text="Filtro Avanzado" CssClass="form-control" ID="chkFiltroAvanzado" AutoPostBack="true" OnCheckedChanged="chkFiltroAvanzado_CheckedChanged" />
-            </div>
+    
+    <div class="col-6" style="display: flex; flex-direction: column; justify-content: flex-end;">
+        <div class="mb-3">
+            <asp:CheckBox runat="server" Text="Filtro Avanzado" CssClass="form-control" ID="chkFiltroAvanzado" AutoPostBack="true" OnCheckedChanged="chkFiltroAvanzado_CheckedChanged" />
         </div>
+    </div>
+</div>
+
+     <div class="col-3 d-flex align-items-end">
+        <asp:Label ID="lblMensaje" runat="server" Visible="false" CssClass="text-danger" />
+    </div>
+
         <%if (chkFiltroAvanzado.Checked)
             { %>
         <div class="row">
@@ -62,8 +64,8 @@
                 </div>
 
             </div>
-        </div>
-        <%} %>
+        
+          <%} %>
     </div>
 
     <div>

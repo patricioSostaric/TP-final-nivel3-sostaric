@@ -29,23 +29,57 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void txtFiltro_TextChanged(object sender, EventArgs e)
         {
-            
-            List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
-            List<Articulo> listaFiltrada = lista.FindAll(x => x.Nombre.ToUpper().Contains(txtFiltro.Text.ToUpper()));
+            try
+            {
+                // Si el filtro está vacío → mostrar todos
+                if (string.IsNullOrWhiteSpace(txtFiltro.Text))
+                {
+                    if (Session["listaArticulos"] != null)
+                    {
+                        lblMensaje.Visible = false;
+                        repRepetidor.DataSource = (List<Articulo>)Session["listaArticulos"];
+                        repRepetidor.DataBind();
+                    }
+                    return;
+                }
 
-            if (listaFiltrada.Count == 0)
-            {
-                lblMensaje.Text = "No se encontraron artículos con ese nombre.";
-                lblMensaje.Visible = true;   // mostrar el label si no hay resultado de busqueda
-                repRepetidor.DataSource = null;
-                repRepetidor.DataBind();
+                // Validación: sesión nula
+                if (Session["listaArticulos"] == null)
+                {
+                    lblMensaje.Text = "⚠ No se pudo acceder a la lista de artículos.";
+                    lblMensaje.CssClass = "alert alert-danger d-block";
+                    lblMensaje.Visible = true;
+                    return;
+                }
+
+                List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
+                List<Articulo> listaFiltrada = lista.FindAll(x =>
+                    x.Nombre.ToUpper().Contains(txtFiltro.Text.Trim().ToUpper()));
+
+                if (listaFiltrada.Count == 0)
+                {
+                    lblMensaje.Text = "⚠ No se encontraron artículos con ese nombre.";
+                    lblMensaje.CssClass = "alert alert-danger d-block";
+                    lblMensaje.Visible = true;
+
+                    repRepetidor.DataSource = null;
+                    repRepetidor.DataBind();
+                }
+                else
+                {
+                    lblMensaje.Visible = false;
+                    repRepetidor.DataSource = listaFiltrada;
+                    repRepetidor.DataBind();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                lblMensaje.Visible = false;  // ocultar el label si hay resultados
-                repRepetidor.DataSource = listaFiltrada;
-                repRepetidor.DataBind();
+                Session.Add("error", ex.ToString());
+                Response.Redirect("Error.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
             }
+
+
 
 
         }
