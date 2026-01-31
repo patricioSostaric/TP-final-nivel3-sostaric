@@ -1,14 +1,30 @@
-.vs
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.tmp
+*.log
+
+# Build results
 bin/
 obj/
 *.dll
 *.pdb
 *.cache
 
-# Visual Studio
-.vs/
-*.user
-*.suo
-
 # NuGet packages
 packages/
+*.nupkg
+project.lock.json
+
+# Publicación y perfiles locales
+Properties/PublishProfiles/
+*.pubxml
+*.publishproj
+
+# Archivos absolutos generados por Visual Studio
+*.FileListAbsolute.txt
+
+# Archivos de OneNote que se colaron
+*.one
+*.onetoc2
