@@ -15,6 +15,15 @@ namespace tp_final_Nivel3_sostaric_patricio
     {
 
         /// <summary>
+        /// lblSinFavoritos control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSinFavoritos;
+
+        /// <summary>
         /// Scriptmanajer1 control.
         /// </summary>
         /// <remarks>

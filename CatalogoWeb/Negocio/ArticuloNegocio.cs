@@ -92,29 +92,55 @@ namespace Negocio
         
         public void Modificar(Articulo art)
         {
-            using (SqlConnection conexion = new SqlConnection(cadenaConexion))
-            using (SqlCommand comando = new SqlCommand())
+            using (SqlConnection sqlConnection = new SqlConnection(cadenaConexion))
             {
-                comando.CommandType = System.Data.CommandType.Text;
-                comando.CommandText = "UPDATE ARTICULOS SET Codigo=@codigo, Nombre=@nombre, Descripcion=@desc, " +
-                                      "IdMarca=@idMarca, IdCategoria=@idCategoria, ImagenUrl=@img, Precio=@precio " +
-                                      "WHERE Id=@id";
-                comando.Parameters.AddWithValue("@codigo", art.Codigo);
-                comando.Parameters.AddWithValue("@nombre", art.Nombre);
-                comando.Parameters.AddWithValue("@desc", art.Descripcion);
-                comando.Parameters.AddWithValue("@idMarca", art.TipoMarca.Id);
-                comando.Parameters.AddWithValue("@idCategoria", art.TipoCategoria.Id);
-                comando.Parameters.AddWithValue("@img", art.ImagenUrl);
-                comando.Parameters.AddWithValue("@precio", art.Precio);
-                comando.Parameters.AddWithValue("@id", art.Id);
+                sqlConnection.Open();
 
-                comando.Connection = conexion;
-                conexion.Open();
-                comando.ExecuteNonQuery();
+                // Validar duplicados en otros artículos
+                using (SqlCommand check = new SqlCommand(
+                    "SELECT COUNT(*) FROM Articulos WHERE (Codigo=@codigo OR Nombre=@nombre) AND Id<>@id",
+                    sqlConnection))
+                {
+                    check.Parameters.AddWithValue("@codigo", art.Codigo);
+                    check.Parameters.AddWithValue("@nombre", art.Nombre);
+                    check.Parameters.AddWithValue("@id", art.Id);
+
+                    int count = (int)check.ExecuteScalar();
+                    if (count > 0)
+                    {
+                        throw new Exception("Ya existe otro artículo con ese código o nombre.");
+                    }
+                }
+
+                // Update directo por Id → el Id nunca se cambia
+                using (SqlCommand sqlCommand = new SqlCommand(
+                    @"UPDATE Articulos 
+              SET Codigo=@codigo, 
+                  Nombre=@nombre, 
+                  Descripcion=@desc, 
+                  IdMarca=@idMarca, 
+                  IdCategoria=@idCategoria, 
+                  ImagenUrl=@img, 
+                  Precio=@precio 
+              WHERE Id=@id", sqlConnection))
+                {
+                    sqlCommand.Parameters.AddWithValue("@codigo", art.Codigo);
+                    sqlCommand.Parameters.AddWithValue("@nombre", art.Nombre);
+                    sqlCommand.Parameters.AddWithValue("@desc", art.Descripcion);
+                    sqlCommand.Parameters.AddWithValue("@idMarca", art.TipoMarca.Id);
+                    sqlCommand.Parameters.AddWithValue("@idCategoria", art.TipoCategoria.Id);
+                    sqlCommand.Parameters.AddWithValue("@img", art.ImagenUrl);
+                    sqlCommand.Parameters.AddWithValue("@precio", art.Precio);
+                    sqlCommand.Parameters.AddWithValue("@id", art.Id);
+
+                    sqlCommand.ExecuteNonQuery();
+                }
             }
+
+
         }
 
-        // Baja
+
         public void Eliminar(int id)
         {
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))
@@ -226,24 +252,29 @@ namespace Negocio
 
         }
 
-        // Validación
+        
         public bool ExisteArticulo(string codigo, string nombre)
         {
             using (SqlConnection conexion = new SqlConnection(cadenaConexion))
             using (SqlCommand comando = new SqlCommand())
             {
                 comando.CommandType = System.Data.CommandType.Text;
-                comando.CommandText = "SELECT COUNT(*) FROM ARTICULOS WHERE Codigo=@codigo OR Nombre=@nombre";
-                comando.Parameters.AddWithValue("@codigo", codigo);
-                comando.Parameters.AddWithValue("@nombre", nombre);
+                comando.CommandText = @"SELECT COUNT(*) 
+                                FROM Articulos 
+                                WHERE UPPER(LTRIM(RTRIM(Codigo))) = UPPER(@codigo) 
+                                   OR UPPER(LTRIM(RTRIM(Nombre))) = UPPER(@nombre)";
+
+                
+                comando.Parameters.AddWithValue("@codigo", codigo.Trim());
+                comando.Parameters.AddWithValue("@nombre", nombre.Trim());
 
                 comando.Connection = conexion;
                 conexion.Open();
                 int count = (int)comando.ExecuteScalar();
                 return count > 0;
             }
-        }
 
+        }
 
     }
 }

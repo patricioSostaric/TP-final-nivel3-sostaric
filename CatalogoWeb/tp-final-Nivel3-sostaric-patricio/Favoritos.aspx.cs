@@ -38,15 +38,16 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void btnEliminarFavorito_Click(object sender, EventArgs e)
         {
+
             try
             {
                 string argumento = ((Button)sender).CommandArgument;
+                System.Diagnostics.Debug.WriteLine("CommandArgument recibido: " + argumento);
 
-                // Validación  ID debe ser entero válido
-                if (Validacion.ValidaEntero(argumento, out int idArticulo))
+                if (int.TryParse(argumento, out int idArticulo) && idArticulo > 0)
                 {
                     EliminarFavorito(idArticulo);
-                    Cargar(); // refresca la página
+                    Cargar();
                 }
                 else
                 {
@@ -63,14 +64,34 @@ namespace tp_final_Nivel3_sostaric_patricio
 
 
 
+
         }
         private void Cargar()
         {
+            Usuario user = ObtenerUsuario();
+            if (user == null) return;
 
-            List<Articulo> lista = (List<Articulo>)Session["ListaFavoritos"] ?? new List<Articulo>();
+            ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
+            var lista = negocio.ListarFavoritosPorUsuario(user.Id);
+
             RepetidorFavorito.DataSource = lista;
             RepetidorFavorito.DataBind();
-            RepetidorFavorito.Visible = lista.Count > 0;
+
+
+            
+            if (lista.Count > 0)
+            {
+                RepetidorFavorito.DataSource = lista;
+                RepetidorFavorito.DataBind();
+                RepetidorFavorito.Visible = true;
+                lblSinFavoritos.Visible = false;
+            }
+            else
+            {
+                RepetidorFavorito.Visible = false;
+                lblSinFavoritos.Visible = true;
+            }
+            
         }
 
 
@@ -90,21 +111,11 @@ namespace tp_final_Nivel3_sostaric_patricio
             }
 
             ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
-            try
-            {
-                negocio.eliminarFavorito(idArticulo, user.Id);
+            negocio.eliminarFavorito(idArticulo, user.Id);
 
-                List<Articulo> listaArticulos = (List<Articulo>)Session["ListaFavoritos"] ?? new List<Articulo>();
-                listaArticulos.RemoveAll(a => a.Id == idArticulo);
-                Session["ListaFavoritos"] = listaArticulos;
+            Cargar();
 
-                Cargar();
-            }
-            catch (Exception ex)
-            {
-                Session.Add("error", "Error al eliminar favorito: " + ex.Message);
-                Response.Redirect("Error.aspx", false);
-            }
+
         }
 
 

@@ -15,87 +15,88 @@ namespace tp_final_Nivel3_sostaric_patricio
         protected void Page_Load(object sender, EventArgs e)
         {
             txtId.Enabled = false;
-            ConfirmaEliminacion = false;
+
+
             try
             {
-                //configuración inicial de la pantalla.
                 if (!IsPostBack)
                 {
-                    CategoriaNegocio negocio = new CategoriaNegocio();
-                    List<Categoria> lista = negocio.listar();
+                    
+                    cargarCombos();
 
-                    MarcaNegocio negocio1 = new MarcaNegocio();
-                    List<Marca> lista1 = negocio1.listar();
+                    
+                    string idStr = Request.QueryString["id"];
+                    if (!string.IsNullOrEmpty(idStr) && int.TryParse(idStr, out int idArticulo))
+                    {
+                        ArticuloNegocio negocio = new ArticuloNegocio();
+                        Articulo seleccionado = negocio.BuscarPorId(idArticulo);
 
-                    ddlCategoria.DataSource = lista;
-                    ddlCategoria.DataValueField = "Id";
-                    ddlCategoria.DataTextField = "Descripcion";
-                    ddlCategoria.DataBind();
+                        if (seleccionado != null)
+                        {
+                            txtId.Text = seleccionado.Id.ToString();
+                            txtNombre.Text = seleccionado.Nombre;
+                            txtCodigo.Text = seleccionado.Codigo;
+                            txtDescripcion.Text = seleccionado.Descripcion;
+                            txtPrecio.Text = seleccionado.Precio.ToString("0.00");
+                            txtImagenUrl.Text = seleccionado.ImagenUrl;
+                            imgArticulo.ImageUrl = seleccionado.ImagenUrl;
 
-                    ddlMarca.DataSource = lista1;
-                    ddlMarca.DataValueField = "Id";
-                    ddlMarca.DataTextField = "Descripcion";
-                    ddlMarca.DataBind();
-
-                }
-                //configuración si estamos modificando.
-                string id = Request.QueryString["id"] != null ? Request.QueryString["id"].ToString() : "";
-                if (id != "" && !IsPostBack)
-                {
-                    ArticuloNegocio negocio = new ArticuloNegocio();
-                    // Usamos BuscarPorId porque devuelve directamente un solo artículo
-
-                    Articulo seleccionado = negocio.BuscarPorId(int.Parse(id));
-
-                    //guardo Articulo seleccionado en session
-                    Session.Add("ArticuloSeleccionado", seleccionado);
-
-                    //pre cargar todos los campos...
-                    txtId.Text = id;
-                    txtNombre.Text = seleccionado.Nombre;
-                    txtDescripcion.Text = seleccionado.Descripcion;
-                    txtImagenUrl.Text = seleccionado.ImagenUrl;
-                    txtCodigo.Text = seleccionado.Codigo.ToString();
-                    txtPrecio.Text = seleccionado.Precio.ToString("0.00");
-
-
-                    ddlCategoria.SelectedValue = seleccionado.TipoCategoria.Id.ToString();
-                    ddlMarca.SelectedValue = seleccionado.TipoMarca.Id.ToString();
-                    txtImagenUrl_TextChanged(sender, e);
+                            ddlCategoria.SelectedValue = seleccionado.TipoCategoria.Id.ToString();
+                            ddlMarca.SelectedValue = seleccionado.TipoMarca.Id.ToString();
+                        }
+                        else
+                        {
+                            lblMensaje.Text = "⚠ El ID del artículo no es válido.";
+                            lblMensaje.Visible = true;
+                            panelFormulario.Visible = false;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
-                Session.Add("error", ex);
-                Response.Redirect("Error.aspx");
+                Session.Add("error", "Error al cargar formulario: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
             }
+
+
         }
 
         protected void btnAceptar_Click(object sender, EventArgs e)
         {
             try
             {
-                Articulo nuevo = new Articulo();
-                
+                // Validar campos obligatorios
+                if (string.IsNullOrWhiteSpace(txtCodigo.Text) || string.IsNullOrWhiteSpace(txtNombre.Text))
+                {
+                    lblMensaje.Text = "⚠ Debe ingresar un código y un nombre.";
+                    lblMensaje.Visible = true;
+                    return;
+                }
 
-                nuevo.Codigo = txtCodigo.Text;
-                nuevo.Nombre = txtNombre.Text;
-                nuevo.Descripcion = txtDescripcion.Text;
-                nuevo.ImagenUrl = txtImagenUrl.Text;
+                // Construir objeto desde el formulario
+                Articulo nuevo = new Articulo
+                {
+                    Codigo = txtCodigo.Text.Trim(),
+                    Nombre = txtNombre.Text.Trim(),
+                    Descripcion = txtDescripcion.Text.Trim(),
+                    ImagenUrl = txtImagenUrl.Text.Trim()
+                };
 
                 // Validar y asignar precio
                 if (!Validacion.ValidaDecimal(txtPrecio, out decimal precio))
                 {
-                    Session.Add("error", "⚠ El precio debe ser un número válido.");
-                    Response.Redirect("Error.aspx", false);
+                    lblMensaje.Text = "⚠ El precio debe ser un número válido.";
+                    lblMensaje.Visible = true;
                     return;
                 }
                 nuevo.Precio = precio;
+
                 // Validar selección de combos
                 if (!Validacion.ValidaDropDown(ddlCategoria) || !Validacion.ValidaDropDown(ddlMarca))
                 {
-                    Session.Add("error", "⚠ Debe seleccionar una categoría y una marca.");
-                    Response.Redirect("Error.aspx", false);
+                    lblMensaje.Text = "⚠ Debe seleccionar una categoría y una marca.";
+                    lblMensaje.Visible = true;
                     return;
                 }
 
@@ -104,35 +105,60 @@ namespace tp_final_Nivel3_sostaric_patricio
 
                 ArticuloNegocio negocio = new ArticuloNegocio();
 
-                if (Request.QueryString["id"] != null && Validacion.ValidaEntero(txtId.Text, out int idArticulo))
+                // Alta o edición → usar solo QueryString
+                string idStr = Request.QueryString["id"];
+                if (!string.IsNullOrEmpty(idStr) && int.TryParse(idStr, out int idArticulo))
                 {
+                    // Edición
                     nuevo.Id = idArticulo;
                     negocio.Modificar(nuevo);
                 }
                 else
                 {
+                    // Alta
                     negocio.Agregar(nuevo);
                 }
 
+                // Si todo salió bien → volver a la lista
                 Response.Redirect("ArticuloLista.aspx", false);
             }
             catch (Exception ex)
             {
+                // Feedback claro si es duplicado
+                if (ex.Message.Contains("código") || ex.Message.Contains("nombre"))
+                {
+                    lblMensaje.Text = "⚠ Ya existe otro artículo con ese código o nombre.";
+                    lblMensaje.Visible = true;
+                    return;
+                }
+
+                // Errores inesperados → redirigir a Error.aspx
                 Session.Add("error", "Error al guardar artículo: " + ex.Message);
                 Response.Redirect("Error.aspx", false);
             }
+
 
 
         }
 
         protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
         {
-            imgArticulo.ImageUrl = txtImagenUrl.Text;
+            //  Siempre presente en el markup, no dinámico
+            imgArticulo.ImageUrl = string.IsNullOrWhiteSpace(txtImagenUrl.Text)
+                ? "https://grupoact.com.ar/wp-content/uploads/2020/04/placeholder.png"
+                : txtImagenUrl.Text;
+
+
         }
 
         protected void btnEliminar_Click(object sender, EventArgs e)
         {
             ConfirmaEliminacion = true;
+            chkConfirmaEliminacion.Visible = true;
+            btnConfirmaEliminar.Visible = true;
+
+
+
         }
 
         protected void btnConfirmaEliminar_Click(object sender, EventArgs e)
@@ -141,20 +167,23 @@ namespace tp_final_Nivel3_sostaric_patricio
             {
                 if (!chkConfirmaEliminacion.Checked)
                 {
-                    Session.Add("error", "⚠ Debe confirmar la eliminación antes de continuar.");
-                    Response.Redirect("Error.aspx", false);
+                    lblMensaje.Text = "⚠ Debe confirmar la eliminación antes de continuar.";
+                    lblMensaje.Visible = true;
                     return;
                 }
 
-                if (!Validacion.ValidaEntero(txtId.Text, out int idArticulo))
+                // Usar directamente el QueryString
+                string idStr = Request.QueryString["id"];
+                if (string.IsNullOrEmpty(idStr) || !int.TryParse(idStr, out int idArticulo))
                 {
-                    Session.Add("error", "⚠ El ID del artículo no es válido.");
-                    Response.Redirect("Error.aspx", false);
+                    lblMensaje.Text = "⚠ El ID del artículo no es válido.";
+                    lblMensaje.Visible = true;
                     return;
                 }
 
                 ArticuloNegocio negocio = new ArticuloNegocio();
                 negocio.Eliminar(idArticulo);
+
                 Response.Redirect("ArticuloLista.aspx", false);
             }
             catch (Exception ex)
@@ -165,5 +194,24 @@ namespace tp_final_Nivel3_sostaric_patricio
 
 
         }
+        private void cargarCombos()
+        {
+            CategoriaNegocio catNegocio = new CategoriaNegocio();
+            ddlCategoria.DataSource = catNegocio.listar();
+            ddlCategoria.DataValueField = "Id";
+            ddlCategoria.DataTextField = "Descripcion";
+            ddlCategoria.DataBind();
+            ddlCategoria.Items.Insert(0, new ListItem("Seleccione una categoría", ""));
+
+            MarcaNegocio marcaNegocio = new MarcaNegocio();
+            ddlMarca.DataSource = marcaNegocio.listar();
+            ddlMarca.DataValueField = "Id";
+            ddlMarca.DataTextField = "Descripcion";
+            ddlMarca.DataBind();
+            ddlMarca.Items.Insert(0, new ListItem("Seleccione una marca", ""));
+
+
+        }
+
     }
 }

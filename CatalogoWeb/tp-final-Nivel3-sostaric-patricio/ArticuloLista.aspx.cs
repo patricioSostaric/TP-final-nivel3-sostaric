@@ -24,24 +24,26 @@ namespace tp_final_Nivel3_sostaric_patricio
             if (!IsPostBack)
             {
 
-                ArticuloNegocio negocio = new ArticuloNegocio();
-                Session.Add("listaArticulos", negocio.Listar());
-                dgvArticulos.DataSource = Session["listaArticulos"];
-                dgvArticulos.DataBind();
-
-
-                CargarCriterios();
-
+                cargar();  // carga directa desde la DB
+               
             }
+              CargarCriterios(); // inicializa criterios del filtro avanzado
 
         }
+        private void cargar()
+        {
+            ArticuloNegocio negocio = new ArticuloNegocio();
+            dgvArticulos.DataSource = negocio.Listar(); // 🔎 siempre contra la DB
+            dgvArticulos.DataBind();
+        }
+
+
 
         protected void txtFiltro_TextChanged(object sender, EventArgs e)
         {
-           
+
             try
             {
-                // Validación: filtro vacío usando clase Validacion
                 if (Validacion.ValidaTextoVacio(txtFiltro))
                 {
                     lblMensaje.Text = "⚠ Ingresá un valor para buscar por nombre.";
@@ -53,15 +55,9 @@ namespace tp_final_Nivel3_sostaric_patricio
                     return;
                 }
 
-                if (Session["listaArticulos"] == null)
-                {
-                    lblMensaje.Text = "⚠ No se pudo acceder a la lista de artículos.";
-                    lblMensaje.CssClass = "alert alert-danger d-block";
-                    lblMensaje.Visible = true;
-                    return;
-                }
+                ArticuloNegocio negocio = new ArticuloNegocio();
+                List<Articulo> lista = negocio.Listar();
 
-                List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
                 List<Articulo> listaFiltrada = lista.FindAll(x =>
                     x.Nombre.ToUpper().Contains(txtFiltro.Text.Trim().ToUpper()));
 
@@ -74,8 +70,6 @@ namespace tp_final_Nivel3_sostaric_patricio
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
-
-
 
 
         }
@@ -91,17 +85,13 @@ namespace tp_final_Nivel3_sostaric_patricio
                 txtFiltro.Text = string.Empty;
                 lblMensaje.Visible = false; // oculta los mensajes previos
 
-                //  Recargar la grilla con todos los artículos
-                dgvArticulos.DataSource = Session["listaArticulos"];
-                dgvArticulos.DataBind();
-
+                // Recargar la grilla con todos los artículos desde la DB
+                cargar();
             }
-
-            if (!FiltroAvanzado)
+            else
             {
-
-                dgvArticulos.DataSource = Session["listaArticulos"];
-                dgvArticulos.DataBind();
+                // También recarga desde la DB al desactivar el filtro avanzado
+                cargar();
             }
 
 
@@ -182,18 +172,13 @@ namespace tp_final_Nivel3_sostaric_patricio
         protected void dgvArticulos_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             dgvArticulos.PageIndex = e.NewPageIndex;
-            if (Session["listaArticulos"] != null)
-            {
-
-                dgvArticulos.DataSource = Session["listaArticulos"];
-                dgvArticulos.DataBind();
-            }
+            cargar();
         }
 
         private void CargarCriterios()
         {
             ddlCriterio.Items.Clear();
-            //string campoSeleccionado = ddlCampo.SelectedItem?.Text;
+            
             string campoSeleccionado = ddlCampo.SelectedValue;
 
 
@@ -235,15 +220,9 @@ namespace tp_final_Nivel3_sostaric_patricio
             CargarCriterios();
             lblMensaje.Visible = false;
 
-            // Desmarca el filtro avanzado y oculta la sección
+            // Desmarca el filtro avanzado 
             chkFiltroAvanzado.Checked = false;
-           
-            // Recarga la grilla completa
-            ArticuloNegocio negocio = new ArticuloNegocio();
-            dgvArticulos.DataSource = negocio.Listar(); 
-            dgvArticulos.DataBind();
-
-
+            cargar(); 
         }
     }
 }

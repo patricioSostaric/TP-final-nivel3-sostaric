@@ -30,4 +30,25 @@ h2 {
     margin-top: 10px;
     text-align: center;
 }
+.sin-favoritos {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    margin-top: 20px;
+    font-size: 1.1em;
+    position: relative;
+}
+
+    .sin-favoritos::before {
+        content: "⭐"; /* Ícono estrella */
+        color: #dc3545; /* Rojo para dar contraste */
+        margin-right: 8px; /* Espacio entre ícono y texto */
+        text-decoration: line-through; /* Tachado para simbolizar “sin favoritos” */
+    }
+
+
+
+
+
+
 
