@@ -46,9 +46,40 @@ h2 {
         text-decoration: line-through; /* Tachado para simbolizar “sin favoritos” */
     }
 
+.card-unificada {
+    width: 300px;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 1rem auto;
+}
+
+    .card-unificada img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .card-unificada .card-body {
+        flex: 1;
+        padding: 1rem;
+        overflow: hidden;
+    }
+
+    .card-unificada .descripcion {
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* máximo 3 líneas */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 
 
-
-
-
-
+.tamanio-imagen {
+    width: 100% !important; /* ocupa todo el ancho de la tarjeta */
+    height: 180px !important; /* altura fija para todas las imágenes */
+    object-fit: cover !important; /* recorta la imagen sin deformarla */
+    object-position: center !important; /* centra el recorte */
+    display: block ; /* asegura que se comporte como bloque */
+}

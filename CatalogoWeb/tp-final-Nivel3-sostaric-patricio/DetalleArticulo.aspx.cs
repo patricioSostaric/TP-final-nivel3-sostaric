@@ -13,28 +13,14 @@ namespace tp_final_Nivel3_sostaric_patricio
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+
+
             try
             {
                 if (!IsPostBack)
                 {
-                    MarcaNegocio marcanegocio = new MarcaNegocio();
-                    ddlMarca.DataSource = marcanegocio.listar();
-                    ddlMarca.DataValueField = "Id";
-                    ddlMarca.DataTextField = "Descripcion";
-                    ddlMarca.DataBind();
-
-                    CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
-                    ddlCategoria.DataSource = categoriaNegocio.listar();
-                    ddlCategoria.DataValueField = "Id";
-                    ddlCategoria.DataTextField = "Descripcion";
-                    ddlCategoria.DataBind();
-                }
-
-                // Configuración si estamos modificando
-                string idParam = Request.QueryString["id"];
-                if (!string.IsNullOrWhiteSpace(idParam) && !IsPostBack)
-                {
-                    if (int.TryParse(idParam, out int idArticulo))
+                    string idParam = Request.QueryString["id"];
+                    if (!string.IsNullOrWhiteSpace(idParam) && int.TryParse(idParam, out int idArticulo))
                     {
                         ArticuloNegocio negocio = new ArticuloNegocio();
                         var lista = negocio.Listar(idParam);
@@ -43,31 +29,15 @@ namespace tp_final_Nivel3_sostaric_patricio
                         {
                             Articulo seleccionado = lista[0];
 
-                            txtId.Text = idParam;
-                            txtId.ReadOnly = true;
+                            // Asignar valores a Labels
+                            lblNombre.Text = seleccionado.Nombre ?? string.Empty;
+                            lblMarca.Text = seleccionado.TipoMarca?.Descripcion ?? string.Empty;
+                            lblCategoria.Text = seleccionado.TipoCategoria?.Descripcion ?? string.Empty;
+                            lblPrecio.Text = seleccionado.Precio.ToString("0.00");
+                            lblDescripcion.Text = seleccionado.Descripcion ?? string.Empty;
 
-                            txtCodigo.Text = seleccionado.Codigo ?? string.Empty;
-                            txtCodigo.ReadOnly = true;
-
-                            txtNombre.Text = seleccionado.Nombre ?? string.Empty;
-                            txtNombre.ReadOnly = true;
-
-                            txtDescripcion.Text = seleccionado.Descripcion ?? string.Empty;
-                            txtDescripcion.ReadOnly = true;
-
-                            txtPrecio.Text = seleccionado.Precio.ToString("0.00");
-                            txtPrecio.ReadOnly = true;
-
-                            txtImagenUrl.Text = seleccionado.ImagenUrl ?? string.Empty;
-                            txtImagenUrl.ReadOnly = true;
-
-                            ddlMarca.SelectedValue = seleccionado.TipoMarca?.Id.ToString();
-                            ddlMarca.Enabled = false;
-
-                            ddlCategoria.SelectedValue = seleccionado.TipoCategoria?.Id.ToString();
-                            ddlCategoria.Enabled = false;
-
-                            txtImagenUrl_TextChanged(sender, e);
+                            // Imagen
+                            imgArticulo.ImageUrl = seleccionado.ImagenUrl ?? string.Empty;
                         }
                         else
                         {
@@ -93,13 +63,6 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         }
 
-        protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
-        {
-           
-            if (!string.IsNullOrWhiteSpace(txtImagenUrl.Text))
-                imgArticulo.ImageUrl = txtImagenUrl.Text;
-           
 
-        }
     }
 }
