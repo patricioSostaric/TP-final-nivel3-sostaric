@@ -83,3 +83,35 @@ h2 {
     object-position: center !important; /* centra el recorte */
     display: block ; /* asegura que se comporte como bloque */
 }
+
+
+.card-img-uniform {
+    width: 80%;
+    height: 150px; /* altura fija */
+    object-fit: cover; /* recorta sin deformar */
+    object-position: center;
+    display: block;
+}
+
+.card {
+    margin: 10px; /* espacio entre tarjetas */
+}
+
+
+.card-body {
+    padding: 0.75rem; /* en vez de 1rem */
+}
+
+.icono-favorito {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.sin-favoritos {
+    
+    display: block; /* que se comporte como bloque */
+    margin-top: 12px;
+}
+
+
+
