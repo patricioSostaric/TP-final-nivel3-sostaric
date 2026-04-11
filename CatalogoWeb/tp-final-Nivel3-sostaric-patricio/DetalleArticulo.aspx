@@ -3,86 +3,34 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <%-- <h1>Detalle del articulo seleccionado</h1>
-    <br />
-    <div class="row">
-        <div class="col-6">
-            <div class="mb-3">
-                <label for="txtId" class="form-label">Id</label>
-                <asp:TextBox runat="server" ID="txtId" CssClass="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label for="txtCodigo" class="form-label">Código</label>
-                <asp:TextBox runat="server" ID="txtCodigo" CssClass="form-control" />
-
-            </div>
-
-            <div class="mb-3">
-                <label for="txtNombre" class="form-label">Nombre</label>
-                <asp:TextBox runat="server" ID="txtNombre" CssClass="form-control" />
-
-            </div>
+   
+   <div class="row">
+    <div class="col-8 text-center mb-4">
+        <h1 class="titulo-detalle">Detalle del artículo</h1>
+    </div>
+</div>
 
 
-            <div class="mb-3">
-                <label for="ddlMarca" class="form-label">Marca: </label>
-                <asp:DropDownList runat="server" ID="ddlMarca" CssClass="form-select" />
-            </div>
+<div class="row align-items-start">
+    <!-- Columna izquierda: datos del producto -->
+    <div class="col-6 mt-3">
+        <p class="text-muted"><strong>Nombre </strong>
+            <asp:Label runat="server" ID="lblNombre" /></p>
+        <p class="text-muted"><strong>Marca:</strong>
+            <asp:Label runat="server" ID="lblMarca" /></p>
+        <p class="text-muted"><strong>Categoría:</strong>
+            <asp:Label runat="server" ID="lblCategoria" /></p>
+        <p class="text-muted"><strong>Precio </strong>$<asp:Label runat="server" ID="lblPrecio" /></p>
+        <p class="text-muted"><strong>Descripcion</strong>
+            <asp:Label runat="server" ID="lblDescripcion" /></p>
 
-            <div class="mb-3">
-                <label for="ddlCategoria" class="form-label">Categoría: </label>
-                <asp:DropDownList runat="server" ID="ddlCategoria" CssClass="form-select" />
-            </div>
-
-            <div class="mb-3">
-                <label for="txtPrecio" class="form-label">Precio</label>
-                <asp:TextBox runat="server" ID="txtPrecio" CssClass="form-control" />
-            </div>
-
-
-            <div class="mb-3">
-                <label for="txtDescripcion" class="form-label">Descripción</label>
-                <asp:TextBox runat="server" ID="txtDescripcion" TextMode="MultiLine" CssClass="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label for="txtImagenUrl" class="form-label">Imagen</label>
-                <asp:TextBox runat="server" ID="txtImagenUrl" CssClass="form-control" AutoPostBack="true" OnTextChanged="txtImagenUrl_TextChanged" />
-            </div>
-        </div>
-        <div class="col-6">
-
-            <asp:Image ImageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/1200px-Placeholder_view_vector.svg.png"
-                runat="server" ID="imgArticulo" Width="60%" />
-        </div>
-    </div>--%>
-    <h1>Detalle del artículo</h1>
-    <div class="row">
-        <!-- Columna izquierda: datos del producto -->
-        <div class="col-6">
-            <p class="text-muted"><strong>Nombre </strong>
-                <asp:Label runat="server" ID="lblNombre" /></p>
-            <p class="text-muted"><strong>Marca:</strong>
-                <asp:Label runat="server" ID="lblMarca" /></p>
-            <p class="text-muted"><strong>Categoría:</strong>
-                <asp:Label runat="server" ID="lblCategoria" /></p>
-            <p class="text-muted"><strong>Precio </strong>$<asp:Label runat="server" ID="lblPrecio" /></p>
-            <p class="text-muted"><strong>Descripcion</strong>
-                <asp:Label runat="server" ID="lblDescripcion" /></p>
-
-            <a href="Default.aspx" class="btn btn-secondary mt-3">Volver al inicio</a>
-        </div>
-
-
-
-
-        <!-- Columna derecha: imagen -->
-        <div class="col-6 text-center">
-            <asp:Image runat="server" ID="imgArticulo" CssClass="img-fluid rounded" />
-        </div>
+        <a href="Default.aspx" class="btn btn-secondary mt-3">Volver al inicio</a>
     </div>
 
-
+    <!-- Columna derecha: imagen -->
+    <div class="col-6 d-flex justify-content-start">
+        <asp:Image runat="server" ID="imgArticulo" CssClass="img-fluid rounded detalle-img" />
+    </div>
+</div>
 
 </asp:Content>

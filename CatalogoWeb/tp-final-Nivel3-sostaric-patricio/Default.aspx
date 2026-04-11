@@ -20,27 +20,38 @@
         <asp:Label ID="lblMensaje" runat="server" CssClass="text-danger" Visible="false"></asp:Label>
     </div>
     <div class="row row-cols-1 row-cols-md-3 g-4">
+<asp:Repeater ID="repRepetidor" runat="server" OnItemDataBound="repRepetidor_ItemDataBound">
+    <ItemTemplate>
+        <div class="col">
+            <div class="card h-100 card-unificada">
+                <img src="<%#Eval("ImagenUrl") %>" 
+                     class="card-img-top card-img-uniform img-fluid rounded" 
+                     alt="Imagen del articulo"
+                     onerror="this.src='https://www.mansor.com.uy/wp-content/uploads/2020/06/imagen-no-disponible2.jpg'">
 
+                <div class="card-body">
+                    <h5 class="card-title"><%#Eval("Nombre") %></h5>
+                    <p class="card-text"><%#Eval("Descripcion") %></p>
+                    <p class="card-text">Precio: $<%#Eval("Precio", "{0:F2}") %></p>
+                    <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
 
-        <asp:Repeater ID="repRepetidor" runat="server">
-            <ItemTemplate>
-                <div class="col">
-                    <div class="card">
-                        <img src="<%#Eval("ImagenUrl") %>" class="card-img-top" alt="Imagen del articulo" style="max-width: 500px; max-height: 600px;" onerror="this.src='https://www.mansor.com.uy/wp-content/uploads/2020/06/imagen-no-disponible2.jpg'">
+                    <asp:Button Text="Comprar" CssClass="btn btn-secondary" 
+                                ID="btnComprar" CommandArgument='<%#Eval("Id") %>' 
+                                CommandName="ArticuloId" OnClick="btnComprar_Click" runat="server" />
 
-                        <div class="card-body">
-                            <h5 class="card-title"><%#Eval("Nombre") %></h5>
-                            <p class="card-text"><%#Eval("Descripcion") %></p>
-                            <p class="card-text"><%#Eval("Precio", "{0:F2}") %></p>
-                            <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
-                            <asp:Button Text="Comprar" CssClass="btn btn-secondary" ID="btnComprar" CommanArgument='<%#Eval("Id") %>' CommandName="ArticuloId" OnClick="btnComprar_Click" runat="server" />
-                            <asp:Button ID="btnAgregarFavorito" runat="server" CommandArgument='<%# Eval("Id") %>' OnClick="btnAgregarFavorito_Click" Text="♡" CssClass="btn btn-link" Visible='<%# Session["Usuario"] != null %>' />
-
-                        </div>
-                    </div>
+                    <!-- Botón de favoritos dinámico -->
+                    <asp:Button ID="btnFavorito" runat="server" 
+                                CommandArgument='<%# Eval("Id") %>' 
+                                OnClick="btnAgregarFavorito_Click" 
+                                CssClass="btn btn-sm" 
+                                Visible='<%# Session["Usuario"] != null %>' />
                 </div>
-            </ItemTemplate>
-        </asp:Repeater>
+            </div>
+        </div>
+    </ItemTemplate>
+</asp:Repeater>
+
+        
     </div>
 
 

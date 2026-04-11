@@ -112,6 +112,21 @@ h2 {
     display: block; /* que se comporte como bloque */
     margin-top: 12px;
 }
+.detalle-img {
+    max-width: 400px; /* ajustá según tu diseño */
+    margin-left: 20px; /* acerca la imagen al bloque de texto */
+    margin-top: 0; /* asegura que la parte superior quede alineada */
+}
+.titulo-detalle {
+    margin-bottom: 10px; /* separa el título de las columnas */
+}
+
+/*.detalle-img {
+    max-width: 400px;
+    margin-left: 20px;*/ /* acerca la imagen al bloque de texto */
+/*}*/
+
+
 
 
 

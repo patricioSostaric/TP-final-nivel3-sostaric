@@ -139,6 +139,38 @@ namespace tp_final_Nivel3_sostaric_patricio
             }
         }
 
+        protected void repRepetidor_ItemDataBound(object sender, RepeaterItemEventArgs e)
+        {
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+            {
+                Articulo articulo = (Articulo)e.Item.DataItem;
+                Button btnFavorito = (Button)e.Item.FindControl("btnFavorito");
 
+                // Si el usuario está logueado y tenemos lista de favoritos
+                if (Session["Usuario"] != null && Session["ListaFavoritos"] != null)
+                {
+                    List<Articulo> favoritos = (List<Articulo>)Session["ListaFavoritos"];
+                    bool yaFavorito = favoritos.Any(f => f.Id == articulo.Id);
+
+                    if (yaFavorito)
+                    {
+                        btnFavorito.Text = "⭐";
+                        btnFavorito.CssClass = "btn btn-warning btn-sm";
+                    }
+                    else
+                    {
+                        btnFavorito.Text = "♡";
+                        btnFavorito.CssClass = "btn btn-outline-warning btn-sm";
+                    }
+                }
+                else
+                {
+                    // Usuario no logueado → ocultamos el botón
+                    btnFavorito.Visible = false;
+                }
+            }
+
+
+        }
     }
 }
