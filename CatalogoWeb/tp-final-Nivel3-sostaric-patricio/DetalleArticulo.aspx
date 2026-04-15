@@ -29,7 +29,7 @@
 
     <!-- Columna derecha: imagen -->
     <div class="col-6 d-flex justify-content-start">
-        <asp:Image runat="server" ID="imgArticulo" CssClass="img-fluid rounded detalle-img" />
+        <asp:Image runat="server" ID="imgArticulo" CssClass=" img-fluid rounded " />
     </div>
 </div>
 

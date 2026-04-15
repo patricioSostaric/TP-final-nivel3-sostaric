@@ -15,24 +15,27 @@ namespace tp_final_Nivel3_sostaric_patricio
         protected void Page_Load(object sender, EventArgs e)
 
         {
-
-            if (!IsPostBack)
-            {
-                Usuario user = ObtenerUsuario();
-                if (user == null)
+            try { 
+                 if (!IsPostBack)
                 {
-                    Session.Add("error", "⚠ Debe iniciar sesión para ver favoritos.");
-                    Response.Redirect("Error.aspx", false);
-                    return;
+                    Usuario user = ObtenerUsuario();
+                    if (user == null)
+                    {
+                        Session.Add("error", "⚠ Debe iniciar sesión para ver favoritos.");
+                        Response.Redirect("Error.aspx", false);
+                        return;
+                    }
+
+                    ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
+                    Session["ListaFavoritos"] = negocioart.ListarFavoritosPorUsuario(user.Id);
+                    Cargar();
                 }
-
-                ArticuloFavoritoNegocio negocioart = new ArticuloFavoritoNegocio();
-                Session["ListaFavoritos"] = negocioart.ListarFavoritosPorUsuario(user.Id);
-                Cargar();
             }
-
-
-
+            catch (Exception ex)
+            {
+                Session.Add("error", "Error al cargar favoritos: " + ex.Message);
+                Response.Redirect("Error.aspx", false);
+            }
 
         }
 
@@ -62,9 +65,6 @@ namespace tp_final_Nivel3_sostaric_patricio
             }
 
 
-
-
-
         }
         private void Cargar()
         {
@@ -78,7 +78,7 @@ namespace tp_final_Nivel3_sostaric_patricio
             RepetidorFavorito.DataBind();
 
 
-            
+
             if (lista.Count > 0)
             {
                 RepetidorFavorito.DataSource = lista;
@@ -91,14 +91,14 @@ namespace tp_final_Nivel3_sostaric_patricio
                 RepetidorFavorito.Visible = false;
                 lblSinFavoritos.Visible = true;
             }
-            
+
         }
 
 
         public Usuario ObtenerUsuario()
         {
-            return (Usuario)Session["Usuario"] ;
-           
+            return (Usuario)Session["Usuario"];
+
         }
         private void EliminarFavorito(int idArticulo)
         {

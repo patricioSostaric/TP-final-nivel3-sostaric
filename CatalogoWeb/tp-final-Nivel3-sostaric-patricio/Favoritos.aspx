@@ -21,7 +21,7 @@
                    Visible="false" />
     </div>
 </div>
-    
+    <br />
     <asp:ScriptManager ID="Scriptmanajer1" runat="server"></asp:ScriptManager>
     
     <div class="row row-cols-1 row-cols-md-3 g-5">
