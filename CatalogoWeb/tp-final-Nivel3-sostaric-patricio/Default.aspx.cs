@@ -15,12 +15,8 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
-
             if (!IsPostBack)
             {
-
-
                 ArticuloNegocio negocio = new ArticuloNegocio();
                 ListaArticulo = negocio.Listar();
 
@@ -28,31 +24,13 @@ namespace tp_final_Nivel3_sostaric_patricio
                 repRepetidor.DataSource = ListaArticulo;
                 repRepetidor.DataBind();
 
-
                 if (Session["Usuario"] != null)
                 {
                     Usuario user = (Usuario)Session["Usuario"];
                     ArticuloFavoritoNegocio favNegocio = new ArticuloFavoritoNegocio();
                     Session["ListaFavoritos"] = favNegocio.ListarFavoritosPorUsuario(user.Id);
                 }
-
-                repRepetidor.DataSource = Session["listaArticulos"];
-                repRepetidor.DataBind();
-
-
             }
-
-            if (Session["Usuario"] != null)
-            {
-                Usuario user = (Usuario)Session["Usuario"];
-                ArticuloFavoritoNegocio favNegocio = new ArticuloFavoritoNegocio();
-                List<Articulo> favoritos = favNegocio.ListarFavoritosPorUsuario(user.Id);
-
-                Session["ListaFavoritos"] = favoritos;
-            }
-
-
-
         }
 
         protected void txtFiltro_TextChanged(object sender, EventArgs e)
@@ -101,55 +79,53 @@ namespace tp_final_Nivel3_sostaric_patricio
             }
             catch (Exception ex)
             {
-                Session.Add("error", ex.ToString());
+                Session["error"] = ex.ToString();
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
-
-
-
-
         }
 
         protected void btnComprar_Click(object sender, EventArgs e)
         {
-            // Validar sesión
+            // 1. Validar sesión
             if (Session["Usuario"] == null)
             {
-                Session.Add("error", "Debes iniciar sesión para comprar.");
+                Session["error"] = "Debes iniciar sesión para comprar.";
                 Response.Redirect("Login.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
 
+            // 2. Validar argumento del botón
             if (!int.TryParse(((Button)sender).CommandArgument, out int idArticulo))
             {
-                Session.Add("error", "Id de artículo inválido.");
+                Session["error"] = "Id de artículo inválido.";
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
 
-            string valor = ((Button)sender).CommandArgument;
-
-            Session.Add("error", "Disponible próximamente 😁");
+            // 3. Lógica de compra (placeholder)
+            Session["error"] = "Disponible próximamente 😁";
             Response.Redirect("Error.aspx", false);
             Context.ApplicationInstance.CompleteRequest();
         }
 
         protected void btnAgregarFavorito_Click(object sender, EventArgs e)
         {
+            // 1. Validar sesión
             if (Session["Usuario"] == null)
             {
+                Session["error"] = "Debes iniciar sesión para manejar favoritos.";
                 Response.Redirect("Login.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
-
                 return;
             }
-            // Validar argumento del botón
+
+            // 2. Validar argumento del botón
             if (!int.TryParse(((Button)sender).CommandArgument, out int idArticulo))
             {
-                Session.Add("error", "Id de artículo inválido.");
+                Session["error"] = "Id de artículo inválido.";
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
                 return;
@@ -160,32 +136,61 @@ namespace tp_final_Nivel3_sostaric_patricio
 
             try
             {
+                // 3. Lógica principal
                 if (negocio.ExisteFavorito(idArticulo, user.Id))
                     negocio.eliminarFavorito(idArticulo, user.Id);
                 else
                     negocio.insertarNuevoFavorito(new ArticuloFavorito { IdUser = user.Id, IdArticulo = idArticulo });
 
-                // refrescar favoritos y rebind
+                // 4. Refrescar favoritos y rebind
                 Session["ListaFavoritos"] = negocio.ListarFavoritosPorUsuario(user.Id);
                 repRepetidor.DataSource = Session["listaArticulos"];
                 repRepetidor.DataBind();
             }
             catch (Exception ex)
             {
-                Session.Add("error", "Error al manejar favoritos: " + ex.Message);
+                Session["error"] = "Error al manejar favoritos: " + ex.Message;
                 Response.Redirect("Error.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }
-
-
         }
 
+        protected void btnVerDetalle_Click(object sender, EventArgs e)
+        {
+            // 1. Validar sesión
+            if (Session["Usuario"] == null)
+            {
+                Session["error"] = "Debes iniciar sesión para ver detalles.";
+                Response.Redirect("Login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
 
+            // 2. Validar argumento del botón
+            if (!int.TryParse(((Button)sender).CommandArgument, out int idArticulo))
+            {
+                Session["error"] = "Id de artículo inválido.";
+                Response.Redirect("Error.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+
+            try
+            {
+                // 3. Redirigir al detalle con id validado
+                Response.Redirect("DetalleArticulo.aspx?id=" + HttpUtility.UrlEncode(idArticulo.ToString()), false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+            catch (Exception ex)
+            {
+                Session["error"] = "Error al mostrar detalle: " + ex.Message;
+                Response.Redirect("Error.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+            }
+        }
 
         protected void repRepetidor_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
-
-
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
                 Articulo articulo = (Articulo)e.Item.DataItem;
@@ -236,9 +241,14 @@ namespace tp_final_Nivel3_sostaric_patricio
                     {
                         btnFavorito.Visible = false;
                     }
+
+                    Button btnComprar = (Button)e.Item.FindControl("btnComprar");
+                    if (btnComprar != null)
+                    {
+                        btnComprar.CommandArgument = articulo.Id.ToString();
+                    }
+
                 }
-
-
             }
         }
     }
