@@ -29,28 +29,36 @@
             <ItemTemplate>
                 <div class="col">
                     <div class="card h-100 card-unificada">
-                      <%--<div class="card h-100  card-img-top ">--%>
-                        <img src="<%#Eval("ImagenUrl") %>"
-                             class="img-fluid rounded detalle-img"
-                             alt="Imagen del artículo"
-                             onerror="this.src='https://www.mansor.com.uy/wp-content/uploads/2020/06/imagen-no-disponible2.jpg'">
+                       
+                        <asp:Image ID="imgArticulo" runat="server"
+                                   CssClass="img-fluid rounded detalle-img"
+                                   AlternateText="Imagen del artículo" />
 
                         <div class="card-body">
-                            <h5 class="card-title"><%#Eval("Nombre") %></h5>
-                            <p class="card-text"><%#Eval("Descripcion") %></p>
-                            <p class="card-text">Precio: $<%#Eval("Precio", "{0:F2}") %></p>
-                            <a href="DetalleArticulo.aspx?id=<%#Eval("Id") %>">Ver detalle</a>
+                            
+                            <asp:Label ID="lblNombre" runat="server" CssClass="card-title h5"></asp:Label>
 
-                            <asp:Button Text="Comprar" CssClass="btn btn-secondary"
-                                        ID="btnComprar" CommandArgument='<%#Eval("Id") %>'
-                                        CommandName="ArticuloId" OnClick="btnComprar_Click" runat="server" />
+                            
+                            <asp:Label ID="lblDescripcion" runat="server" CssClass="card-text d-block"></asp:Label>
 
-                            <!-- Botón de favoritos dinámico -->
+                            
+                            <asp:Label ID="lblPrecio" runat="server" CssClass="card-text d-block"></asp:Label>
+
+                            
+                            <asp:HyperLink ID="lnkDetalle" runat="server" Text="Ver detalle"></asp:HyperLink>
+
+                            
+                            <asp:Button ID="btnComprar" runat="server"
+                                        Text="Comprar"
+                                        CssClass="btn btn-secondary mt-2"
+                                        OnClick="btnComprar_Click" />
+
+                            
                             <asp:Button ID="btnFavorito" runat="server"
-                                        CommandArgument='<%# Eval("Id") %>'
-                                        OnClick="btnAgregarFavorito_Click"
-                                        CssClass=" btn btn-sm mt-2 ms-2 " />
+                                        CssClass="btn btn-sm mt-2 ms-2"
+                                        OnClick="btnAgregarFavorito_Click" />
                         </div>
+                       
                     </div>
                 </div>
             </ItemTemplate>

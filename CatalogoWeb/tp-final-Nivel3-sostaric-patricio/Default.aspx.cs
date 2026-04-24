@@ -19,11 +19,15 @@ namespace tp_final_Nivel3_sostaric_patricio
 
             if (!IsPostBack)
             {
+
+
                 ArticuloNegocio negocio = new ArticuloNegocio();
                 ListaArticulo = negocio.Listar();
 
                 Session["listaArticulos"] = ListaArticulo;
-                repRepetidor.DataSource = Session["listaArticulos"];
+                repRepetidor.DataSource = ListaArticulo;
+                repRepetidor.DataBind();
+
 
                 if (Session["Usuario"] != null)
                 {
@@ -46,9 +50,6 @@ namespace tp_final_Nivel3_sostaric_patricio
 
                 Session["ListaFavoritos"] = favoritos;
             }
-            // Rebind SIEMPRE, así el ItemDataBound se ejecuta con la info actualizada
-            //repRepetidor.DataSource = Session["listaArticulos"];
-            // repRepetidor.DataBind();
 
 
 
@@ -58,7 +59,6 @@ namespace tp_final_Nivel3_sostaric_patricio
         {
             try
             {
-                // Si el filtro está vacío → mostrar todos
                 if (string.IsNullOrWhiteSpace(txtFiltro.Text))
                 {
                     if (Session["listaArticulos"] != null)
@@ -70,7 +70,6 @@ namespace tp_final_Nivel3_sostaric_patricio
                     return;
                 }
 
-                // Validación: sesión nula
                 if (Session["listaArticulos"] == null)
                 {
                     lblMensaje.Text = "⚠ No se pudo acceder a la lista de artículos.";
@@ -81,6 +80,7 @@ namespace tp_final_Nivel3_sostaric_patricio
 
                 List<Articulo> lista = (List<Articulo>)Session["listaArticulos"];
                 List<Articulo> listaFiltrada = lista.FindAll(x =>
+                    !string.IsNullOrEmpty(x.Nombre) &&
                     x.Nombre.ToUpper().Contains(txtFiltro.Text.Trim().ToUpper()));
 
                 if (listaFiltrada.Count == 0)
@@ -117,19 +117,27 @@ namespace tp_final_Nivel3_sostaric_patricio
 
             Session.Add("error", "Disponible próximamente 😁");
             Response.Redirect("Error.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
 
         protected void btnAgregarFavorito_Click(object sender, EventArgs e)
         {
             if (Session["Usuario"] == null)
             {
-                Response.Redirect("Login.aspx",false);
+                Response.Redirect("Login.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
 
                 return;
             }
+            // Validar argumento del botón
+            if (!int.TryParse(((Button)sender).CommandArgument, out int idArticulo))
+            {
+                Session.Add("error", "Id de artículo inválido.");
+                Response.Redirect("Error.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
 
-            int idArticulo = int.Parse(((Button)sender).CommandArgument);
             Usuario user = (Usuario)Session["Usuario"];
             ArticuloFavoritoNegocio negocio = new ArticuloFavoritoNegocio();
 
@@ -149,6 +157,7 @@ namespace tp_final_Nivel3_sostaric_patricio
             {
                 Session.Add("error", "Error al manejar favoritos: " + ex.Message);
                 Response.Redirect("Error.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
             }
 
 
@@ -158,27 +167,62 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void repRepetidor_ItemDataBound(object sender, RepeaterItemEventArgs e)
         {
+
+
             if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
             {
                 Articulo articulo = (Articulo)e.Item.DataItem;
+
+                var lblNombre = (Label)e.Item.FindControl("lblNombre");
+                if (lblNombre != null)
+                    lblNombre.Text = HttpUtility.HtmlEncode(articulo.Nombre);
+
+                var lblDescripcion = (Label)e.Item.FindControl("lblDescripcion");
+                if (lblDescripcion != null)
+                    lblDescripcion.Text = HttpUtility.HtmlEncode(articulo.Descripcion);
+
+                var lblPrecio = (Label)e.Item.FindControl("lblPrecio");
+                if (lblPrecio != null)
+                    lblPrecio.Text = $"Precio: ${articulo.Precio:F2}";
+
+                var img = (Image)e.Item.FindControl("imgArticulo");
+                if (img != null)
+                {
+                    if (!string.IsNullOrEmpty(articulo.ImagenUrl) &&
+                        Uri.IsWellFormedUriString(articulo.ImagenUrl, UriKind.Absolute))
+                    {
+                        img.ImageUrl = articulo.ImagenUrl;
+                    }
+                    else
+                    {
+                        img.ImageUrl = "https://www.mansor.com.uy/wp-content/uploads/2020/06/imagen-no-disponible2.jpg";
+                    }
+                }
+
+                var lnkDetalle = (HyperLink)e.Item.FindControl("lnkDetalle");
+                if (lnkDetalle != null)
+                    lnkDetalle.NavigateUrl = "DetalleArticulo.aspx?id=" + HttpUtility.UrlEncode(articulo.Id.ToString());
+
                 Button btnFavorito = (Button)e.Item.FindControl("btnFavorito");
-
-                if (Session["Usuario"] != null && Session["ListaFavoritos"] != null)
+                if (btnFavorito != null)
                 {
-                    var favoritos = (List<Articulo>)Session["ListaFavoritos"];
-                    bool yaFavorito = favoritos.Any(f => f.Id == articulo.Id);
+                    if (Session["Usuario"] != null && Session["ListaFavoritos"] != null)
+                    {
+                        var favoritos = (List<Articulo>)Session["ListaFavoritos"];
+                        bool yaFavorito = favoritos.Any(f => f.Id == articulo.Id);
 
-                    btnFavorito.Text = yaFavorito ? "⭐ Quitar de favoritos" : "♡ Agregar a favoritos";
-                    btnFavorito.CssClass = yaFavorito ? "btn btn-warning btn-sm mt-2 ms-2" : "btn btn-outline-warning btn-sm mt-2 ms-2";
+                        btnFavorito.Text = yaFavorito ? "⭐ Quitar de favoritos" : "♡ Agregar a favoritos";
+                        btnFavorito.CssClass = yaFavorito ? "btn btn-warning btn-sm mt-2 ms-2" : "btn btn-outline-warning btn-sm mt-2 ms-2";
+                        btnFavorito.CommandArgument = articulo.Id.ToString();
+                    }
+                    else
+                    {
+                        btnFavorito.Visible = false;
+                    }
                 }
-                else
-                {
-                    btnFavorito.Visible = false;
-                }
+
+
             }
-
-
-
         }
     }
 }
