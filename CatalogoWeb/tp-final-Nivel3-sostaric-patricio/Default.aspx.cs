@@ -113,6 +113,23 @@ namespace tp_final_Nivel3_sostaric_patricio
 
         protected void btnComprar_Click(object sender, EventArgs e)
         {
+            // Validar sesión
+            if (Session["Usuario"] == null)
+            {
+                Session.Add("error", "Debes iniciar sesión para comprar.");
+                Response.Redirect("Login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+
+            if (!int.TryParse(((Button)sender).CommandArgument, out int idArticulo))
+            {
+                Session.Add("error", "Id de artículo inválido.");
+                Response.Redirect("Error.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+
             string valor = ((Button)sender).CommandArgument;
 
             Session.Add("error", "Disponible próximamente 😁");
