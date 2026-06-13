@@ -13,8 +13,7 @@ La aplicación está publicada y disponible aquí:
 
 ### 👥 Usuarios de prueba
 **Admin**  
-- Usuario: `admin@admin.com`  
-- Contraseña: `admin`  
+ 
 
 **Usuario común**  
 - Usuario: `user@user.com`  
