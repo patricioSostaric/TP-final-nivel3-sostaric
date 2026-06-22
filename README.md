@@ -91,7 +91,7 @@ Este commit marca el blindaje definitivo del proyecto:
 ---
 
 ## 🔮 Próximos pasos
-Se iniciará la migración del proyecto a **.NET 9 MVC Core** con:  
+Se iniciará la migración del proyecto a **.NET 10 MVC Core** con:  
 - Entity Framework Core  
 - Identity  
 - LINQ  
